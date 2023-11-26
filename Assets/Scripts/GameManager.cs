@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System;
+using DG.Tweening;
 
 public class GameManager : MonoBehaviour
 {
@@ -33,21 +34,26 @@ public class GameManager : MonoBehaviour
     public int goal = 0; // 스테이지 목표 인원
     public int attend = 0; // 해당 스테이지에서 목표층에 도달한 인원
     public int floor = 0; // 현재 층
-    int totalHuman = 0; // 정원 6명
-    int totalWeight = 0; // 제한 250kg
+    //int totalHuman = 0; // 정원 6명
+    public int totalWeight = 0; // 제한 250kg
+    public int maxWeight = 0;
     bool isSave; // 저장된 진행 상황이 있는지 확인
 
-    public bool[] check_Place = new bool[(int)placing.MaxCount];
-    public Vector3[] place = new Vector3[(int)placing.MaxCount];
+    public List<Tuple<GameObject, Student>> students = new List<Tuple<GameObject, Student>>();
 
     [SerializeField] GameObject stage;
-
-    #endregion
 
     public enum placing
     {
         left, mid, right, leftUp, midUp, rightUp, leftDown, midDown, rightDown, MaxCount
     }
+    public bool[] check_Place;
+    public bool[,] check_Out;
+    public Vector3[] place;
+
+    GameObject door_Left;
+    GameObject door_Right;
+    #endregion
 
     void Start()
     {
@@ -63,17 +69,32 @@ public class GameManager : MonoBehaviour
             Debug.Log($"현재 스테이지: {stageNum}");
         }
 
+        check_Place = new bool[(int)placing.MaxCount];
+        check_Out = new bool[11,3];
+        place = new Vector3[(int)placing.MaxCount];
+
+        door_Left = GameObject.Find("Door_Left");
+        door_Right = GameObject.Find("Door_Right");
+
         for (int i = 0; i < (int)placing.MaxCount; i++)
         {
             check_Place[i] = false;
         }
 
+        for(int i = 0; i < 11; i++)
+        {
+            for(int j = 0; j < 3; j++)
+            {
+                check_Out[i, j] = false;
+            }
+        }
+
         for (int i = 0; i < (int)placing.MaxCount; i++)
         {
             int index = i;
-            float x = (index / 3 + 1) * 1.3f;
-            float y = index / 3 * 2;
-            place[i] = new Vector3(-0.8f + x, 2 - y, 10);
+            float x = (index % 3) * 1.15f;
+            float y = index / 3 * 2.5f;
+            place[i] = new Vector3(-0.75f + x, 1.1f - y, 10);
         }
 
         stage = Resources.Load<GameObject>($"Stage{stageNum}");
@@ -85,25 +106,39 @@ public class GameManager : MonoBehaviour
         return goal == attend;
     } 
 
-    public void stageClear() // checkGoal 수행 후 true이면 반환, stageNum을 +1, 다음 스테이지, 게임 종료 버튼 출현
-    {
-        Instantiate(Resources.Load($"stageClear"), GameObject.Find("Info").transform);
-        Destroy(GameObject.Find($"Stage{stageNum}(Clone)"));
-        UIManager.Instance.disableElv();
+    //public void stageClear() // checkGoal 수행 후 true이면 반환, stageNum을 +1, 다음 스테이지, 게임 종료 버튼 출현
+    //{
+    //    Instantiate(Resources.Load($"stageClear"), GameObject.Find("Info").transform);
+    //    Destroy(GameObject.Find($"Stage{stageNum}(Clone)"));
+    //    UIManager.Instance.disableElv();
 
-        if (stageNum == 9)
-            stageNum = 0;
-        stageNum++;
-        PlayerPrefs.SetInt("savedStage", stageNum);
-        PlayerPrefs.Save();
+    //    if (stageNum == 9)
+    //        stageNum = 0;
+    //    stageNum++;
+    //    PlayerPrefs.SetInt("savedStage", stageNum);
+    //    PlayerPrefs.Save();
+    //}
+
+    //public void stageFailed() // checkGoal 수행 후 true이면 반환, 스테이지 재시도 , 게임 종료 버튼 출현
+    //{
+    //    Instantiate(Resources.Load($"stageFailed"), GameObject.Find("Info").transform);
+    //    Destroy(GameObject.Find($"Stage{stageNum}(Clone)"));
+    //    UIManager.Instance.disableElv();
+    //}
+
+    #region 엘리베이터 문 여닫기
+    public void DoorClose()
+    {
+        door_Left.transform.DOMoveX(-0.458f, 1);
+        door_Right.transform.DOMoveX(1.297f, 1);
     }
 
-    public void stageFailed() // checkGoal 수행 후 true이면 반환, 스테이지 재시도 , 게임 종료 버튼 출현
+    public void DoorOpen()
     {
-        Instantiate(Resources.Load($"stageFailed"), GameObject.Find("Info").transform);
-        Destroy(GameObject.Find($"Stage{stageNum}(Clone)"));
-        UIManager.Instance.disableElv();
+        door_Left.transform.DOMoveX(-2.278f, 1);
+        door_Right.transform.DOMoveX(3.13f, 1);
     }
+    #endregion
 
     #region 엘리베이터 코루틴
     int eSpeed = 1;
@@ -111,7 +146,7 @@ public class GameManager : MonoBehaviour
     {
         if (stageNum > 5)
             eSpeed = 2;
-
+        
         yield return new WaitForSeconds(eSpeed);
 
         floor++;
@@ -124,7 +159,7 @@ public class GameManager : MonoBehaviour
         int eSpeed = 1;
         if (stageNum > 5)
             eSpeed = 2;
-
+        
         yield return new WaitForSeconds(eSpeed);
 
         floor--;
@@ -134,32 +169,82 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator UpElevator(int f)
     {
+        DoorClose();
         yield return new WaitForSeconds(eSpeed);
         UIManager.Instance.addStageTime(eSpeed);
         Debug.Log("doorclose");
+        foreach (Tuple<GameObject, Student> student in students)
+        {
+            if(student.Item2.nowFloor!=-1)
+                student.Item1.SetActive(false);
+        }
         for (int i = floor; i < f; i++)
         {
                 yield return StartCoroutine(UpFloor());
         }
+        foreach (Tuple<GameObject, Student> student in students)
+        {
+            if(student.Item2.nowFloor==floor)
+                student.Item1.SetActive(true);
+        }
         yield return new WaitForSeconds(eSpeed);
+        ActiveStudents(f);
+        DoorOpen();
         UIManager.Instance.addStageTime(eSpeed);
         Debug.Log("dooropen");
-        UIManager.Instance.enableElv();
+        UIManager.Instance.enableElv(f);
     }
 
     public IEnumerator DownElevator(int f)
     {
+        DoorClose();
         yield return new WaitForSeconds(eSpeed);
         UIManager.Instance.addStageTime(eSpeed);
         Debug.Log("doorclose");
+        foreach (Tuple<GameObject, Student> student in students)
+        {
+            if (student.Item2.nowFloor != -1)
+                student.Item1.SetActive(false);
+        }
         for (int i = floor; i > f; i--)
         {
             yield return StartCoroutine(DownFloor());
         }
+        foreach (Tuple<GameObject, Student> student in students)
+        {
+            if (student.Item2.nowFloor == floor)
+                student.Item1.SetActive(true);
+        }
         yield return new WaitForSeconds(eSpeed);
+        ActiveStudents(f);
+        DoorOpen();
         UIManager.Instance.addStageTime(eSpeed);
         Debug.Log("dooropen");
-        UIManager.Instance.enableElv();
+        UIManager.Instance.enableElv(f);
     }
     #endregion
+
+    public Tuple<GameObject,Student> Spawn(int s, int w, int nf, int gf, int op)
+    {
+        GameObject studentObject = Instantiate(Resources.Load("Student")) as GameObject;
+        Student studentComponent = studentObject.AddComponent<Student>();
+        studentComponent.sex = s;
+        studentComponent.weight = w;
+        studentComponent.nowFloor = nf;
+        studentComponent.goalFloor = gf;
+        studentComponent.orderPlace = op;
+        //studentComponent.activeTime = at;
+        studentObject.transform.position = place[op];
+        studentObject.SetActive(false);
+        return Tuple.Create(studentObject,studentComponent);
+    }
+
+    void ActiveStudents(int f)
+    {
+        foreach (Tuple<GameObject, Student> student in students)
+        {
+            if (student.Item2.nowFloor == f)
+                student.Item1.SetActive(true);
+        }
+    }
 }

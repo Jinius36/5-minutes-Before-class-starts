@@ -1,52 +1,30 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Student : MonoBehaviour
 {
-    #region 싱글톤
-    static Student instance;
-    Student() { }
-    private void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-        }
-    }
-    public static Student Instance
-    {
-        get
-        {
-            return instance;
-        }
-    }
-    #endregion
+    public int sex; // 성별 남: 0, 여: 1
+    public int weight; // 몸무게
+    public int nowFloor; // 현재 위치한 층, -1은 엘리베이터 탑승
+    public int goalFloor; // 목표 층
+    public int orderPlace; // 서있는 위치
 
-    int sex; // 성별 남: 0, 여: 1
-    int weight; // 몸무게
-    int nowFloor; // 현재 위치한 층, -1은 엘리베이터 탑승
-    int goalFloor; // 목표 층
-    int orderPlaceOut; // 엘리베이터 밖에 있을 때 좌측: 0, 중간: 1, 우측: 2 순으로 서있는 위치 결정 
-    int orderPlaceElv; // 엘리베이터 안에서의 위치, 위 1 2 3 아래 4 5 6
-    
+    Vector3 mousepoz; 
 
-   
-
-    Vector3 mousepoz; // = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10);
-    //public Vector3 place;
-
-
-    [SerializeField] bool isDragging = false;
+    bool isDragging = false;
     [SerializeField] bool isOnElevator = false;
     [SerializeField] bool isAtOutside = true;
+    public static bool isOnSetting = false;
 
-    public Collider2D you;
-
+    #region 드래그 앤 드롭
     private void OnMouseDown()
     {
-        isDragging = true;
+        if(!isOnSetting)
+            isDragging = true;
     }
 
     private void OnMouseDrag()
@@ -58,23 +36,105 @@ public class Student : MonoBehaviour
         }
     }
 
+    private void ResetPlace()
+    {
+        transform.position = GameManager.Instance.place[orderPlace];
+    }
+
     private void OnMouseUp()
     {
-        int p = 0;
         isDragging = false;
-        if (isOnElevator)
+        int p = 0;
+        if(transform.position.x <= -1.0f || transform.position.x >= 1.8f 
+            || transform.position.y >= 3.0f || transform.position.y <= -5.0f) // 너무 벗어났다면 원위치
         {
-            nowFloor = -1;
-            transform.position = new Vector3(-0.8f, -2, 10);
-            //p = 3;
-            //while (GameManager.Instance.placement[p].Item1==false)
-            //{
-            //    p++;
-            //}
-            //GameManager.Instance.placement[p] = new Tuple<bool, Vector3>(true, new Vector3(-0.8f + p * 1.3f, -2, 10));
-            //place = GameManager.Instance.placement[p].Item2;
+            ResetPlace();
+            return;
+        }
+        else if(transform.position.x > -1.0f && transform.position.x <= -0.175f) // x 위치 판정
+        {
+            p = 0;
+        }
+        else if (transform.position.x > -0.175f && transform.position.x < 0.975f)
+        {
+            p = 1;
+        }
+        else if (transform.position.x >= 0.975f && transform.position.x < 1.8f)
+        {
+            p = 2;
         }
 
+        if (isAtOutside) // 밖에다 놨다면
+        {
+            if (goalFloor == GameManager.Instance.floor) // 원하는 층에 도착한 상황
+            {
+                UIManager.Instance.addAttend();
+                Destroy(gameObject);
+            }
+
+            //if (!GameManager.Instance.check_Out[nowFloor,p]) // 내린 층이 원하는 층이 아니고 그 층 중에 빈 자리에 배치함
+            //{
+            //    nowFloor = GameManager.Instance.floor;
+            //    transform.position = GameManager.Instance.place[p];
+            //    if(orderPlace > 2) // 엘리베이터에서 밖으로 배치한 경우
+            //        GameManager.Instance.check_Place[orderPlace] = false;
+            //    else // 밖에서 밖으로 배치한 경우
+            //        GameManager.Instance.check_Out[nowFloor, orderPlace] = false;
+            //    orderPlace = p;
+            //    GameManager.Instance.check_Out[nowFloor, p] = true;
+            //}
+
+            else // 내린 층이 원하는 층이 아님
+            {
+                ResetPlace();
+                return;
+            }
+        }
+        else // 엘리베이터에 놨다면
+        {
+            if(transform.position.y > -2.65f)
+            {
+                p += 3;
+                if (!GameManager.Instance.check_Place[p] 
+                    && GameManager.Instance.totalWeight + weight < GameManager.Instance.maxWeight)
+                {
+                    transform.position = GameManager.Instance.place[p];
+                    if(orderPlace > 2) // 엘리베이터에서 엘리베이터로 배치한 경우
+                        GameManager.Instance.check_Place[orderPlace] = false;
+                    else // 밖에서 엘리베이터에 배치한 경우
+                        GameManager.Instance.check_Out[nowFloor,orderPlace] = false;
+                    orderPlace = p;
+                    GameManager.Instance.check_Place[p] = true;
+                    nowFloor = -1;
+                }
+                else
+                {
+                    ResetPlace();
+                    return;
+                }
+            }
+            else
+            {
+                p += 6;
+                if (!GameManager.Instance.check_Place[p] 
+                    && GameManager.Instance.totalWeight + weight < GameManager.Instance.maxWeight)
+                {
+                    transform.position = GameManager.Instance.place[p];
+                    if (orderPlace > 2) // 엘리베이터에서 엘리베이터로 배치한 경우
+                        GameManager.Instance.check_Place[orderPlace] = false;
+                    else // 밖에서 엘리베이터에 배치한 경우
+                        GameManager.Instance.check_Out[nowFloor, orderPlace] = false;
+                    orderPlace = p;
+                    GameManager.Instance.check_Place[p] = true;
+                    nowFloor = -1;
+                }
+                else
+                {
+                    ResetPlace();
+                    return;
+                }
+            }
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -88,10 +148,5 @@ public class Student : MonoBehaviour
         isOnElevator = false;
         isAtOutside = true;
     }
-
-void Start()
-    {
-        //place = gameObject.GetComponent<Vector3>();
-        //you=gameObject.AddComponent<Collider2D>();
-    }
+    #endregion
 }

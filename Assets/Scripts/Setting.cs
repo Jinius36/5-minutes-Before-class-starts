@@ -20,6 +20,8 @@ public class Setting : MonoBehaviour
     {
         setting = Instantiate(Resources.Load("Popup_Setting") as GameObject);
         set_BTN.interactable = false;
+        UIManager.Instance.disableElv();
+        Student.isOnSetting = true;
         set_CloseBTN = GameObject.Find("CloseSetButton").GetComponent<Button>();
         set_CloseBTN.onClick.AddListener(CloseSetting);
         exit_BTN = GameObject.Find("ExitGameButton_Set").GetComponent<Button>();
@@ -30,6 +32,8 @@ public class Setting : MonoBehaviour
     {
         Destroy(setting);
         set_BTN.interactable = true;
+        UIManager.Instance.enableElv();
+        Student.isOnSetting = false;
     }
 
     public void GameStart() // GameStartButton¿Ã ∫∏¿Ø

@@ -102,6 +102,11 @@ public class UIManager : MonoBehaviour
             ArrFloor[1].sprite = Resources.Load<Sprite>($"Sprites/Pannel_Images/Pannel_{GameManager.Instance.floor - 1}") as Sprite;
         }
     } // 현재 층 표시만 변경
+
+    public void SetGoalUI()
+    {
+        ArrUI[(int)textUI.Goal].text = $"Goal: {GameManager.Instance.goal}";
+    }
     #endregion
 
 

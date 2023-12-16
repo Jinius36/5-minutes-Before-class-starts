@@ -28,12 +28,28 @@ public class Setting : MonoBehaviour
         exit_BTN.onClick.AddListener(ExitGame);
     }
 
+    public void OpenSettingAtStart()
+    {
+        setting = Instantiate(Resources.Load("Popup_Setting") as GameObject);
+        set_BTN.interactable = false;
+        set_CloseBTN = GameObject.Find("CloseSetButton").GetComponent<Button>();
+        set_CloseBTN.onClick.AddListener(CloseSettingAtStart);
+        exit_BTN = GameObject.Find("ExitGameButton_Set").GetComponent<Button>();
+        exit_BTN.onClick.AddListener(ExitGame);
+    }
+
     public void CloseSetting()
     {
         Destroy(setting);
         set_BTN.interactable = true;
         UIManager.Instance.enableElv();
         Student.isOnSetting = false;
+    }
+
+    public void CloseSettingAtStart()
+    {
+        Destroy(setting);
+        set_BTN.interactable = true;
     }
 
     public void GameStart() // GameStartButton¿Ã ∫∏¿Ø

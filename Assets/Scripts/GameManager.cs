@@ -39,25 +39,27 @@ public class GameManager : MonoBehaviour
     public int maxWeight = 0;
     bool isSave; // 저장된 진행 상황이 있는지 확인
 
-    public List<Tuple<GameObject, Student>> students = new List<Tuple<GameObject, Student>>();
+    public List<Tuple<GameObject, Student>> students = new List<Tuple<GameObject, Student>>(); // 개별 학생 스폰, 관리용
 
-    [SerializeField] GameObject stage;
+    [SerializeField] GameObject stage; // 현재 스테이지
 
-    public enum placing
+    public enum placing // 위치 좌표 설정을 위한것들
     {
         left, mid, right, leftUp, midUp, rightUp, leftDown, midDown, rightDown, MaxCount
     }
-    public bool[] check_Place;
-    public bool[,] check_Out;
-    public Vector3[] place;
+    public bool[] check_Place; // 엘리베이터 내부에 쓰임
+    public bool[,] check_Out; // 외부의 층마다 쓰임
+    public Vector3[] place; // 좌표
 
-    GameObject door_Left;
+    GameObject door_Left; // 엘리베이터 문
     GameObject door_Right;
+
+    GameObject[] existenceMarks;
     #endregion
 
     void Start()
     {
-        isSave = PlayerPrefs.HasKey("savedStage");
+        isSave = PlayerPrefs.HasKey("savedStage"); // 스테이지 프리팹
         if (!isSave)
         {
             stageNum = 1;
@@ -69,14 +71,14 @@ public class GameManager : MonoBehaviour
             Debug.Log($"현재 스테이지: {stageNum}");
         }
 
-        check_Place = new bool[(int)placing.MaxCount];
-        check_Out = new bool[11,3];
-        place = new Vector3[(int)placing.MaxCount];
+        check_Place = new bool[(int)placing.MaxCount]; // 학생의 처음 생성 위치 및 엘리베이터 위치에 학생이 있는지 여부
+        check_Out = new bool[11,3];                    // 엘리베이터 외부 위치에 학생이 있는지 여부
+        place = new Vector3[(int)placing.MaxCount];    // 좌표 설정
 
-        door_Left = GameObject.Find("Door_Left");
+        door_Left = GameObject.Find("Door_Left"); // 엘리베이터 문 설정
         door_Right = GameObject.Find("Door_Right");
 
-        for (int i = 0; i < (int)placing.MaxCount; i++)
+        for (int i = 0; i < (int)placing.MaxCount; i++) // false로 초기화
         {
             check_Place[i] = false;
         }
@@ -89,7 +91,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        for (int i = 0; i < (int)placing.MaxCount; i++)
+        for (int i = 0; i < (int)placing.MaxCount; i++) // 좌표 설정
         {
             int index = i;
             float x = (index % 3) * 1.15f;
@@ -97,7 +99,14 @@ public class GameManager : MonoBehaviour
             place[i] = new Vector3(-0.75f + x, 1.1f - y, 10);
         }
 
-        stage = Resources.Load<GameObject>($"Stage{stageNum}");
+        existenceMarks = new GameObject[11]; // 층의 학생 존재 유무 느낌표, 비활성으로 초기화
+        for (int i = 0; i < 11; i++)
+        {
+            existenceMarks[i] = GameObject.Find($"Mark_{i}");
+            existenceMarks[i].SetActive(false);
+        }
+
+        stage = Resources.Load<GameObject>($"Stage{stageNum}"); // 스테이지 불러오기
         Instantiate(stage);
     }
 
@@ -224,7 +233,8 @@ public class GameManager : MonoBehaviour
     }
     #endregion
 
-    public Tuple<GameObject,Student> Spawn(int s, int w, int nf, int gf, int op)
+    #region 학생 관리
+    public Tuple<GameObject,Student> Spawn(int s, int w, int nf, int gf, int op) // 학생 소환
     {
         GameObject studentObject = Instantiate(Resources.Load("Student")) as GameObject;
         Student studentComponent = studentObject.AddComponent<Student>();
@@ -236,15 +246,32 @@ public class GameManager : MonoBehaviour
         //studentComponent.activeTime = at;
         studentObject.transform.position = place[op];
         studentObject.SetActive(false);
+        check_Out[nf, op] = true;
         return Tuple.Create(studentObject,studentComponent);
     }
 
-    void ActiveStudents(int f)
+    void ActiveStudents(int f) // 학생 활성화, 엘리베이터가 층 이동을 완료하면 실행
     {
         foreach (Tuple<GameObject, Student> student in students)
         {
             if (student.Item2.nowFloor == f)
                 student.Item1.SetActive(true);
         }
+    }
+    #endregion
+
+    public void checkExistenceAll() // 전체 층 대상으로 학생 유무 판단하여 느낌표 활성화
+    {
+        for(int i = 0; i < 11; i++)
+        {
+            if (check_Out[i, 0] || check_Out[i,1] || check_Out[i,2])
+                existenceMarks[i].SetActive(true);
+        }
+    }
+
+    public void checkExistence(int f) // 단일 층 대상 버전
+    {
+        if (!check_Out[f, 0] && !check_Out[f, 1] && !check_Out[f, 2])
+            existenceMarks[f].SetActive(false);
     }
 }

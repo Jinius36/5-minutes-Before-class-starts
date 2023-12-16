@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -13,7 +14,11 @@ public class Student : MonoBehaviour
     public int goalFloor; // 목표 층
     public int orderPlace; // 서있는 위치
 
-    Vector3 mousepoz; 
+    Vector3 mousepoz;
+
+    
+    Canvas canvas;
+    TextMeshProUGUI text;
 
     bool isDragging = false;
     [SerializeField] bool isOnElevator = false;
@@ -23,8 +28,11 @@ public class Student : MonoBehaviour
     #region 드래그 앤 드롭
     private void OnMouseDown()
     {
-        if(!isOnSetting)
+        if (!isOnSetting)
+        {
             isDragging = true;
+            canvas.gameObject.SetActive(true);
+        }
     }
 
     private void OnMouseDrag()
@@ -44,6 +52,8 @@ public class Student : MonoBehaviour
     private void OnMouseUp()
     {
         isDragging = false;
+        if(!isOnSetting)
+            canvas.gameObject.SetActive(false);
         int p = 0;
         if(transform.position.x <= -1.0f || transform.position.x >= 1.8f 
             || transform.position.y >= 3.0f || transform.position.y <= -5.0f) // 너무 벗어났다면 원위치
@@ -92,17 +102,20 @@ public class Student : MonoBehaviour
         }
         else // 엘리베이터에 놨다면
         {
-            if(transform.position.y > -2.65f)
+            if(transform.position.y > -2.65f) 
             {
                 p += 3;
                 if (!GameManager.Instance.check_Place[p] 
                     && GameManager.Instance.totalWeight + weight < GameManager.Instance.maxWeight)
                 {
                     transform.position = GameManager.Instance.place[p];
-                    if(orderPlace > 2) // 엘리베이터에서 엘리베이터로 배치한 경우
+                    if (orderPlace > 2) // 엘리베이터에서 엘리베이터로 배치한 경우
                         GameManager.Instance.check_Place[orderPlace] = false;
                     else // 밖에서 엘리베이터에 배치한 경우
-                        GameManager.Instance.check_Out[nowFloor,orderPlace] = false;
+                    { 
+                        GameManager.Instance.check_Out[nowFloor, orderPlace] = false;
+                        GameManager.Instance.checkExistence(nowFloor);
+                    }
                     orderPlace = p;
                     GameManager.Instance.check_Place[p] = true;
                     nowFloor = -1;
@@ -123,7 +136,10 @@ public class Student : MonoBehaviour
                     if (orderPlace > 2) // 엘리베이터에서 엘리베이터로 배치한 경우
                         GameManager.Instance.check_Place[orderPlace] = false;
                     else // 밖에서 엘리베이터에 배치한 경우
+                    {
                         GameManager.Instance.check_Out[nowFloor, orderPlace] = false;
+                        GameManager.Instance.checkExistence(nowFloor);
+                    }
                     orderPlace = p;
                     GameManager.Instance.check_Place[p] = true;
                     nowFloor = -1;
@@ -149,4 +165,17 @@ public class Student : MonoBehaviour
         isAtOutside = true;
     }
     #endregion
+
+    void Start()
+    {
+        
+        canvas = GetComponentInChildren<Canvas>();
+        text = canvas.GetComponentInChildren<TextMeshProUGUI>();
+        if (goalFloor == 0)
+            text.text = "B2";
+        if (goalFloor == 1)
+            text.text = "L";
+        if (goalFloor >= 2)
+            text.text = $"{goalFloor - 1}";
+    }
 }

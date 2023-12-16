@@ -915,7 +915,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1994207793271454464}
         m_TargetAssemblyTypeName: Setting, Assembly-CSharp
-        m_MethodName: OpenSetting
+        m_MethodName: OpenSettingAtStart
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

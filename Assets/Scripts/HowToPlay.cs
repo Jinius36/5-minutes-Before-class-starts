@@ -15,15 +15,15 @@ public class HowToPlay : MonoBehaviour
     public GameObject popup_HowToPlay;
     int nowPage;
 
-    private void Awake()
-    {
-        popup_HowToPlay.SetActive(false);
-        images_HowToPlay.SetActive(false);
-        btn_NextPage.SetActive(false);
-        btn_PrevPage.SetActive(false);
-        nowPage = 0;
-        _Instance = this; // NULL 방지
-    }
+    //private void Awake()
+    //{
+    //    popup_HowToPlay.SetActive(false);
+    //    images_HowToPlay.SetActive(false);
+    //    btn_NextPage.SetActive(false);
+    //    btn_PrevPage.SetActive(false);
+    //    nowPage = 0;
+    //    _Instance = this; // NULL 방지
+    //}
 
     public void OpenHowToPlay() // 게임 방법 창 열기, 시작 화면 HowToPlayButton이 보유
     {

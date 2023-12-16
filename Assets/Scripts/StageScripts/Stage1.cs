@@ -47,6 +47,8 @@ public class Stage1 : MonoBehaviour
                 student.Item1.SetActive(true);
             }
         }
+        UIManager.Instance.SetGoalUI();
         GameManager.Instance.DoorOpen();
+        GameManager.Instance.checkExistenceAll();
     }
 }

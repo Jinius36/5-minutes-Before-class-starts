@@ -52,8 +52,6 @@ public class Student : MonoBehaviour
     private void OnMouseUp()
     {
         isDragging = false;
-        if(!isOnSetting)
-            canvas.gameObject.SetActive(false);
         int p = 0;
         if(transform.position.x <= -1.0f || transform.position.x >= 1.8f 
             || transform.position.y >= 3.0f || transform.position.y <= -5.0f) // ³Ê¹« ¹þ¾î³µ´Ù¸é ¿øÀ§Ä¡
@@ -97,6 +95,8 @@ public class Student : MonoBehaviour
             else // ³»¸° ÃþÀÌ ¿øÇÏ´Â ÃþÀÌ ¾Æ´Ô
             {
                 ResetPlace();
+                if (!isOnSetting && orderPlace > 2)
+                    canvas.gameObject.SetActive(false);
                 return;
             }
         }
@@ -104,6 +104,7 @@ public class Student : MonoBehaviour
         {
             if(transform.position.y > -2.65f) 
             {
+
                 p += 3;
                 if (!GameManager.Instance.check_Place[p] 
                     && GameManager.Instance.totalWeight + weight < GameManager.Instance.maxWeight)
@@ -119,10 +120,14 @@ public class Student : MonoBehaviour
                     orderPlace = p;
                     GameManager.Instance.check_Place[p] = true;
                     nowFloor = -1;
+                    if (!isOnSetting)
+                        canvas.gameObject.SetActive(false);
                 }
                 else
                 {
                     ResetPlace();
+                    if (!isOnSetting)
+                        canvas.gameObject.SetActive(false);
                     return;
                 }
             }
@@ -143,10 +148,14 @@ public class Student : MonoBehaviour
                     orderPlace = p;
                     GameManager.Instance.check_Place[p] = true;
                     nowFloor = -1;
+                    if (!isOnSetting)
+                        canvas.gameObject.SetActive(false);
                 }
                 else
                 {
                     ResetPlace();
+                    if (!isOnSetting)
+                        canvas.gameObject.SetActive(false);
                     return;
                 }
             }

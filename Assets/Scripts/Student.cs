@@ -56,6 +56,8 @@ public class Student : MonoBehaviour
         if(transform.position.x <= -1.0f || transform.position.x >= 1.8f 
             || transform.position.y >= 3.0f || transform.position.y <= -5.0f) // ³Ê¹« ¹þ¾î³µ´Ù¸é ¿øÀ§Ä¡
         {
+            if(orderPlace>2)
+                canvas.gameObject.SetActive(false);
             ResetPlace();
             return;
         }

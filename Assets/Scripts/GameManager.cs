@@ -110,30 +110,68 @@ public class GameManager : MonoBehaviour
         Instantiate(stage);
     }
 
+    #region 성공,실패
+    Button retry_BTN;
+    Button next_BTN;
+    Button exit_BTN;
+
     public bool checkGoal() // 목표 인원에 도달했으면 true
     {
         return goal == attend;
-    } 
+    }
 
-    //public void stageClear() // checkGoal 수행 후 true이면 반환, stageNum을 +1, 다음 스테이지, 게임 종료 버튼 출현
-    //{
-    //    Instantiate(Resources.Load($"stageClear"), GameObject.Find("Info").transform);
-    //    Destroy(GameObject.Find($"Stage{stageNum}(Clone)"));
-    //    UIManager.Instance.disableElv();
+    public void CallClear()
+    {
+        StageClear();
+    }
 
-    //    if (stageNum == 9)
-    //        stageNum = 0;
-    //    stageNum++;
-    //    PlayerPrefs.SetInt("savedStage", stageNum);
-    //    PlayerPrefs.Save();
-    //}
+    void StageClear() // checkGoal 수행 후 true이면 반환, stageNum을 +1, 다음 스테이지, 게임 종료 버튼 출현
+    {
+        if (stageNum == 9)
+            stageNum = 0;
+        else
+            stageNum++;
+        PlayerPrefs.SetInt("savedStage", stageNum);
+        PlayerPrefs.Save();
+        UIManager.Instance.disableElv();
+        Instantiate(Resources.Load($"StageClear"));
+        Destroy(stage);
+        foreach (Tuple<GameObject, Student> student in this.students)
+        {
+            Destroy(student.Item1);
+        }
+        exit_BTN = GameObject.Find("ExitGameButton_Clear").GetComponent<Button>();
+        exit_BTN.onClick.AddListener(Setting.Instance.ExitGame);
+        next_BTN = GameObject.Find("NextButton").GetComponent<Button>();
+        next_BTN.onClick.AddListener(StageRetry);
+    }
 
-    //public void stageFailed() // checkGoal 수행 후 true이면 반환, 스테이지 재시도 , 게임 종료 버튼 출현
-    //{
-    //    Instantiate(Resources.Load($"stageFailed"), GameObject.Find("Info").transform);
-    //    Destroy(GameObject.Find($"Stage{stageNum}(Clone)"));
-    //    UIManager.Instance.disableElv();
-    //}
+    public void CallFailed()
+    {
+        StageFailed();
+    }
+
+    void StageFailed() // 제한시간 경과 시 실패, 스테이지 재시도 및 게임 종료 버튼 출현
+    {
+        UIManager.Instance.disableElv();
+        Instantiate(Resources.Load($"StageFailed"));
+        Destroy(stage);
+        foreach(Tuple<GameObject, Student> student in this.students) 
+        {
+            Destroy(student.Item1);
+        }
+        exit_BTN = GameObject.Find("ExitGameButton_Failed").GetComponent<Button>();
+        exit_BTN.onClick.AddListener(Setting.Instance.ExitGame);
+        retry_BTN = GameObject.Find("RetryButton").GetComponent<Button>();
+        retry_BTN.onClick.AddListener(StageRetry);
+    }
+
+    void StageRetry()
+    {
+        stage = Resources.Load<GameObject>($"Stage{stageNum}");
+        Instantiate(stage);
+    }
+    #endregion
 
     #region 엘리베이터 문 여닫기
     public void DoorClose()

@@ -65,8 +65,8 @@ public class UIManager : MonoBehaviour
         ArrFloor[0].sprite = Resources.Load<Sprite>("Sprites/Pannel_Images/Pannel_B") as Sprite;
         ArrFloor[1].sprite = Resources.Load<Sprite>("Sprites/Pannel_Images/Pannel_2") as Sprite;
         ArrUI[(int)textUI.stageTime].text = $"{11 + GameManager.Instance.stageNum} : 30";
-        ArrUI[(int)textUI.Goal].text = $"Goal: {GameManager.Instance.goal}";
-        ArrUI[(int)textUI.Attend].text = $"Attend: {GameManager.Instance.attend}";
+        ArrUI[(int)textUI.Goal].text = $"   목표 : {GameManager.Instance.goal}";
+        ArrUI[(int)textUI.Attend].text = $"   달성 : {GameManager.Instance.attend}";
     }
 
     #region 표시 변경
@@ -79,7 +79,7 @@ public class UIManager : MonoBehaviour
     public void addAttend()
     {
         GameManager.Instance.attend++;
-        ArrUI[(int)textUI.Attend].text = $"Attend: {GameManager.Instance.attend}";
+        ArrUI[(int)textUI.Attend].text = $"   달성 : {GameManager.Instance.attend}";
     } // 달성 인원 추가, 표시 변경
 
     public void changeFloor() 
@@ -105,7 +105,7 @@ public class UIManager : MonoBehaviour
 
     public void SetGoalUI()
     {
-        ArrUI[(int)textUI.Goal].text = $"Goal: {GameManager.Instance.goal}";
+        ArrUI[(int)textUI.Goal].text = $"   목표 : {GameManager.Instance.goal}";
     }
     #endregion
 

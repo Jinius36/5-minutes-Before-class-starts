@@ -76,6 +76,7 @@ public class Student : MonoBehaviour
         {
             if (goalFloor == GameManager.Instance.floor) // 원하는 층에 도착한 상황
             {
+                GameManager.Instance.check_Place[orderPlace] = false;
                 UIManager.Instance.addAttend();
                 Destroy(gameObject);
             }

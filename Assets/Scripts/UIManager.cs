@@ -70,10 +70,18 @@ public class UIManager : MonoBehaviour
     }
 
     #region 표시 변경
+    int hour = 0;
+    [SerializeField] int minute = 0;
+
     public void addStageTime(int i)
     {
         GameManager.Instance.stageTime += i;
-        ArrUI[(int)textUI.stageTime].text = $"{11 + GameManager.Instance.stageNum} : {30 + GameManager.Instance.stageTime}"; 
+        if ((GameManager.Instance.stageTime + 30) % 60 == 0)
+        {
+            hour++;
+            minute = GameManager.Instance.stageTime + 30;
+        }
+        ArrUI[(int)textUI.stageTime].text = $"{11 + hour + GameManager.Instance.stageNum} : {30 - minute + GameManager.Instance.stageTime}"; 
     } // 스테이지 시간 추가, 표시 변경
 
     public void addAttend()

@@ -3611,6 +3611,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stageNum: 0
   stageTime: 0
+  limitTime: 0
   goal: 0
   attend: 0
   floor: 0

@@ -10,6 +10,7 @@ public class Stage1 : MonoBehaviour
     void Start()
     {
         GameManager.Instance.goal = 10;
+        GameManager.Instance.limitTime = 60;
         GameManager.Instance.maxWeight = 250;
         for(int i = 0; i < 5; i++)
         {

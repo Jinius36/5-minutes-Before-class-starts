@@ -30,7 +30,8 @@ public class GameManager : MonoBehaviour
 
     #region 변수들
     public int stageNum; // 플레이어가 현재 도전해야 하는 스테이지
-    public int stageTime = 0; // 경과 시간
+    public int stageTime; // 경과 시간
+    public int limitTime; // 제한 시간
     public int goal = 0; // 스테이지 목표 인원
     public int attend = 0; // 해당 스테이지에서 목표층에 도달한 인원
     public int floor = 0; // 현재 층
@@ -42,6 +43,7 @@ public class GameManager : MonoBehaviour
     public List<Tuple<GameObject, Student>> students = new List<Tuple<GameObject, Student>>(); // 개별 학생 스폰, 관리용
 
     [SerializeField] GameObject stage; // 현재 스테이지
+    GameObject uiManager;
 
     public enum placing // 위치 좌표 설정을 위한것들
     {
@@ -67,6 +69,8 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            //PlayerPrefs.SetInt("savedStage", 1);
+            //PlayerPrefs.Save();
             stageNum = PlayerPrefs.GetInt("savedStage");
             Debug.Log($"현재 스테이지: {stageNum}");
         }
@@ -108,6 +112,8 @@ public class GameManager : MonoBehaviour
 
         stage = Resources.Load<GameObject>($"Stage{stageNum}"); // 스테이지 불러오기
         Instantiate(stage);
+
+        
     }
 
     #region 성공,실패
@@ -135,13 +141,12 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.Save();
         UIManager.Instance.disableElv();
         Instantiate(Resources.Load($"StageClear"));
-        Destroy(stage);
         foreach (Tuple<GameObject, Student> student in this.students)
         {
             Destroy(student.Item1);
         }
         exit_BTN = GameObject.Find("ExitGameButton_Clear").GetComponent<Button>();
-        exit_BTN.onClick.AddListener(Setting.Instance.ExitGame);
+        exit_BTN.onClick.AddListener(ExitGame);
         next_BTN = GameObject.Find("NextButton").GetComponent<Button>();
         next_BTN.onClick.AddListener(StageRetry);
     }
@@ -155,21 +160,27 @@ public class GameManager : MonoBehaviour
     {
         UIManager.Instance.disableElv();
         Instantiate(Resources.Load($"StageFailed"));
-        Destroy(stage);
         foreach(Tuple<GameObject, Student> student in this.students) 
         {
             Destroy(student.Item1);
         }
         exit_BTN = GameObject.Find("ExitGameButton_Failed").GetComponent<Button>();
-        exit_BTN.onClick.AddListener(Setting.Instance.ExitGame);
+        exit_BTN.onClick.AddListener(ExitGame);
         retry_BTN = GameObject.Find("RetryButton").GetComponent<Button>();
         retry_BTN.onClick.AddListener(StageRetry);
     }
 
     void StageRetry()
     {
-        stage = Resources.Load<GameObject>($"Stage{stageNum}");
-        Instantiate(stage);
+        SceneManager.LoadScene(1);
+    }
+    void ExitGame()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit(); // 어플리케이션 종료
+#endif
     }
     #endregion
 
@@ -216,6 +227,7 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator UpElevator(int f)
     {
+        Student.isElvMoving = true;
         DoorClose();
         yield return new WaitForSeconds(eSpeed);
         UIManager.Instance.addStageTime(eSpeed);
@@ -240,10 +252,14 @@ public class GameManager : MonoBehaviour
         UIManager.Instance.addStageTime(eSpeed);
         Debug.Log("dooropen");
         UIManager.Instance.enableElv(f);
+        Student.isElvMoving = false;
+        if (stageTime >= limitTime)
+            CallFailed();
     }
 
     public IEnumerator DownElevator(int f)
     {
+        Student.isElvMoving = true;
         DoorClose();
         yield return new WaitForSeconds(eSpeed);
         UIManager.Instance.addStageTime(eSpeed);
@@ -268,6 +284,9 @@ public class GameManager : MonoBehaviour
         UIManager.Instance.addStageTime(eSpeed);
         Debug.Log("dooropen");
         UIManager.Instance.enableElv(f);
+        Student.isElvMoving = false;
+        if (stageTime >= limitTime)
+            CallFailed();
     }
     #endregion
 
@@ -298,6 +317,7 @@ public class GameManager : MonoBehaviour
     }
     #endregion
 
+    #region 느낌표 관리
     public void checkExistenceAll() // 전체 층 대상으로 학생 유무 판단하여 느낌표 활성화
     {
         for(int i = 0; i < 11; i++)
@@ -312,4 +332,5 @@ public class GameManager : MonoBehaviour
         if (!check_Out[f, 0] && !check_Out[f, 1] && !check_Out[f, 2])
             existenceMarks[f].SetActive(false);
     }
+    #endregion
 }

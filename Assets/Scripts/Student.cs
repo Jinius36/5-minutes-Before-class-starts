@@ -24,11 +24,12 @@ public class Student : MonoBehaviour
     [SerializeField] bool isOnElevator = false;
     [SerializeField] bool isAtOutside = true;
     public static bool isOnSetting = false;
+    public static bool isElvMoving = false;
 
     #region 드래그 앤 드롭
     private void OnMouseDown()
     {
-        if (!isOnSetting)
+        if (!isOnSetting && !isElvMoving)
         {
             isDragging = true;
             canvas.gameObject.SetActive(true);
@@ -80,6 +81,8 @@ public class Student : MonoBehaviour
             {
                 GameManager.Instance.check_Place[orderPlace] = false;
                 UIManager.Instance.addAttend();
+                if(GameManager.Instance.checkGoal())
+                    GameManager.Instance.CallClear();
                 Destroy(gameObject);
             }
 

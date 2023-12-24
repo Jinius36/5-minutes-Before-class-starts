@@ -55,6 +55,9 @@ public class GameManager : MonoBehaviour
 
     GameObject door_Left; // 엘리베이터 문
     GameObject door_Right;
+    SpriteRenderer background; // 배경
+
+    Sprite[] backgrounds;
 
     GameObject[] existenceMarks;
     #endregion
@@ -108,6 +111,13 @@ public class GameManager : MonoBehaviour
         {
             existenceMarks[i] = GameObject.Find($"Mark_{i}");
             existenceMarks[i].SetActive(false);
+        }
+
+        background=GameObject.Find("Background").GetComponent<SpriteRenderer>();
+        backgrounds=new Sprite[11];
+        for (int i = 0;i < 11; i++)
+        {
+            backgrounds[i] = Resources.Load<Sprite>($"Sprites/Background_Images/Back{i}");
         }
 
         stage = Resources.Load<GameObject>($"Stage{stageNum}"); // 스테이지 불러오기
@@ -248,6 +258,7 @@ public class GameManager : MonoBehaviour
         }
         yield return new WaitForSeconds(eSpeed);
         ActiveStudents(f);
+        ChangeBack(f);
         DoorOpen();
         UIManager.Instance.addStageTime(eSpeed);
         Debug.Log("dooropen");
@@ -280,6 +291,7 @@ public class GameManager : MonoBehaviour
         }
         yield return new WaitForSeconds(eSpeed);
         ActiveStudents(f);
+        ChangeBack(f);
         DoorOpen();
         UIManager.Instance.addStageTime(eSpeed);
         Debug.Log("dooropen");
@@ -287,6 +299,11 @@ public class GameManager : MonoBehaviour
         Student.isElvMoving = false;
         if (stageTime >= limitTime)
             CallFailed();
+    }
+
+    void ChangeBack(int f)
+    {
+        background.sprite = backgrounds[f];
     }
     #endregion
 

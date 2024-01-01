@@ -36,8 +36,6 @@ public class GameManager : MonoBehaviour
     public int attend = 0; // 해당 스테이지에서 목표층에 도달한 인원
     public int floor = 0; // 현재 층
     //int totalHuman = 0; // 정원 6명
-    public int totalWeight = 0; // 제한 250kg
-    public int maxWeight = 0;
     bool isSave; // 저장된 진행 상황이 있는지 확인
 
     public List<Tuple<GameObject, Student>> students = new List<Tuple<GameObject, Student>>(); // 개별 학생 스폰, 관리용
@@ -72,8 +70,8 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            //PlayerPrefs.SetInt("savedStage", 1);
-            //PlayerPrefs.Save();
+            PlayerPrefs.SetInt("savedStage", 1);
+            PlayerPrefs.Save();
             stageNum = PlayerPrefs.GetInt("savedStage");
             Debug.Log($"현재 스테이지: {stageNum}");
         }
@@ -103,7 +101,7 @@ public class GameManager : MonoBehaviour
             int index = i;
             float x = (index % 3) * 1.15f;
             float y = index / 3 * 2.5f;
-            place[i] = new Vector3(-0.75f + x, 1.1f - y, 10);
+            place[i] = new Vector3(-0.75f + x, 1.5f - y, 10);
         }
 
         existenceMarks = new GameObject[11]; // 층의 학생 존재 유무 느낌표, 비활성으로 초기화
@@ -308,12 +306,11 @@ public class GameManager : MonoBehaviour
     #endregion
 
     #region 학생 관리
-    public Tuple<GameObject,Student> Spawn(int s, int w, int nf, int gf, int op) // 학생 소환
+    public Tuple<GameObject,Student> Spawn(int s, int nf, int gf, int op) // 학생 소환
     {
         GameObject studentObject = Instantiate(Resources.Load("Student")) as GameObject;
         Student studentComponent = studentObject.AddComponent<Student>();
         studentComponent.sex = s;
-        studentComponent.weight = w;
         studentComponent.nowFloor = nf;
         studentComponent.goalFloor = gf;
         studentComponent.orderPlace = op;

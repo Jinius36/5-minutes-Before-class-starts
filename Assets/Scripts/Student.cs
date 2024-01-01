@@ -9,13 +9,12 @@ using UnityEngine.UIElements;
 public class Student : MonoBehaviour
 {
     public int sex; // 성별 남: 0, 여: 1
-    public int weight; // 몸무게
     public int nowFloor; // 현재 위치한 층, -1은 엘리베이터 탑승
     public int goalFloor; // 목표 층
     public int orderPlace; // 서있는 위치
 
     Vector3 mousepoz;
-
+    SpriteRenderer[] draglayer;
     
     Canvas canvas;
     TextMeshProUGUI text;
@@ -38,6 +37,29 @@ public class Student : MonoBehaviour
 
     private void OnMouseDrag()
     {
+        for(int i=0; i<5; i++)
+        {
+            switch(i)
+            {
+                case 0:
+                    draglayer[i].sortingLayerName = "DragHairBack";
+                    break;
+                case 1:
+                    draglayer[i].sortingLayerName = "DragFace";
+                    break;
+                case 2:
+                    draglayer[i].sortingLayerName = "DragHair";
+                    break;
+                case 3:
+                    draglayer[i].sortingLayerName = "DragPants";
+                    break;
+                case 4:
+                    draglayer[i].sortingLayerName = "DragTop";
+                    break;
+                default: break;
+            }
+        }
+        canvas.sortingOrder = -1;
         if (isDragging)
         {
             mousepoz = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10);
@@ -52,6 +74,29 @@ public class Student : MonoBehaviour
 
     private void OnMouseUp()
     {
+        for (int i = 0; i < 5; i++)
+        {
+            switch (i)
+            {
+                case 0:
+                    draglayer[i].sortingLayerName = "HairBack";
+                    break;
+                case 1:
+                    draglayer[i].sortingLayerName = "Face";
+                    break;
+                case 2:
+                    draglayer[i].sortingLayerName = "Hair";
+                    break;
+                case 3:
+                    draglayer[i].sortingLayerName = "Pants";
+                    break;
+                case 4:
+                    draglayer[i].sortingLayerName = "Top";
+                    break;
+                default: break;
+            }
+        }
+        canvas.sortingOrder = -2;
         isDragging = false;
         int p = 0;
         if(transform.position.x <= -1.0f || transform.position.x >= 1.8f 
@@ -112,8 +157,7 @@ public class Student : MonoBehaviour
             {
 
                 p += 3;
-                if (!GameManager.Instance.check_Place[p] 
-                    && GameManager.Instance.totalWeight + weight < GameManager.Instance.maxWeight)
+                if (!GameManager.Instance.check_Place[p])
                 {
                     transform.position = GameManager.Instance.place[p];
                     if (orderPlace > 2) // 엘리베이터에서 엘리베이터로 배치한 경우
@@ -140,8 +184,7 @@ public class Student : MonoBehaviour
             else
             {
                 p += 6;
-                if (!GameManager.Instance.check_Place[p] 
-                    && GameManager.Instance.totalWeight + weight < GameManager.Instance.maxWeight)
+                if (!GameManager.Instance.check_Place[p])
                 {
                     transform.position = GameManager.Instance.place[p];
                     if (orderPlace > 2) // 엘리베이터에서 엘리베이터로 배치한 경우
@@ -183,6 +226,14 @@ public class Student : MonoBehaviour
 
     void Start()
     {
+        int i = 0;
+        draglayer = new SpriteRenderer[6];
+        foreach(Transform child in this.transform)
+        {
+            if(child.GetComponent<SpriteRenderer>() != null)
+                draglayer[i] = child.GetComponent<SpriteRenderer>();
+            i++;
+        }
         
         canvas = GetComponentInChildren<Canvas>();
         text = canvas.GetComponentInChildren<TextMeshProUGUI>();

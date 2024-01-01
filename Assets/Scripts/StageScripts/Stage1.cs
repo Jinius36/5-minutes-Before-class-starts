@@ -11,20 +11,10 @@ public class Stage1 : MonoBehaviour
     {
         GameManager.Instance.goal = 10;
         GameManager.Instance.limitTime = 60;
-        GameManager.Instance.maxWeight = 250;
         for(int i = 0; i < 5; i++)
         {
             int s1 = Rand.Range(0, 2);
             int s2 = Rand.Range(0, 2);
-            int w1, w2;
-            if (s1 == 0)
-                w1 = Rand.Range(70, 91);
-            else
-                w1 = Rand.Range(40, 61);
-            if (s2 == 0)
-                w2 = Rand.Range(70, 91);
-            else
-                w2 = Rand.Range(40, 61);
             int nf = Rand.Range(0, 11);
             while(howManyStudent[nf]!=0)
                 nf = Rand.Range(0, 11);
@@ -38,8 +28,8 @@ public class Stage1 : MonoBehaviour
             int op1 = Rand.Range(0, 3); int op2 = Rand.Range(0, 3);
             while (op1 == op2)
                 op2 = Rand.Range(0, 3);
-            GameManager.Instance.students.Add(GameManager.Instance.Spawn(s1, w1, nf, gf1, op1));
-            GameManager.Instance.students.Add(GameManager.Instance.Spawn(s2, w2, nf, gf2, op2));
+            GameManager.Instance.students.Add(GameManager.Instance.Spawn(s1, nf, gf1, op1));
+            GameManager.Instance.students.Add(GameManager.Instance.Spawn(s2, nf, gf2, op2));
         }
         foreach(Tuple<GameObject, Student> student in GameManager.Instance.students)
         {

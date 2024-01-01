@@ -124,6 +124,7 @@ public class Student : MonoBehaviour
         {
             if (goalFloor == GameManager.Instance.floor) // 원하는 층에 도착한 상황
             {
+                GameManager.Instance.PlaySound(GameManager.Instance.sounds[(int)GameManager.soundList.StudentMove]);
                 GameManager.Instance.check_Place[orderPlace] = false;
                 UIManager.Instance.addAttend();
                 if(GameManager.Instance.checkGoal())
@@ -159,6 +160,7 @@ public class Student : MonoBehaviour
                 p += 3;
                 if (!GameManager.Instance.check_Place[p])
                 {
+                    GameManager.Instance.PlaySound(GameManager.Instance.sounds[(int)GameManager.soundList.StudentMove]);
                     transform.position = GameManager.Instance.place[p];
                     if (orderPlace > 2) // 엘리베이터에서 엘리베이터로 배치한 경우
                         GameManager.Instance.check_Place[orderPlace] = false;
@@ -186,6 +188,7 @@ public class Student : MonoBehaviour
                 p += 6;
                 if (!GameManager.Instance.check_Place[p])
                 {
+                    GameManager.Instance.PlaySound(GameManager.Instance.sounds[(int)GameManager.soundList.StudentMove]);
                     transform.position = GameManager.Instance.place[p];
                     if (orderPlace > 2) // 엘리베이터에서 엘리베이터로 배치한 경우
                         GameManager.Instance.check_Place[orderPlace] = false;

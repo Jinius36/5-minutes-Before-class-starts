@@ -58,6 +58,14 @@ public class GameManager : MonoBehaviour
     Sprite[] backgrounds;
 
     GameObject[] existenceMarks;
+
+    public enum soundList
+    {
+        StudentMove, ElevatorMove, Arrive, Button, ElvButton, Clear, Fail, MaxCount
+    }
+    public AudioClip[] sounds;
+    AudioSource effectSound;
+    AudioSource buttonSound;
     #endregion
 
     void Start()
@@ -74,6 +82,15 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.Save();
             stageNum = PlayerPrefs.GetInt("savedStage");
             Debug.Log($"현재 스테이지: {stageNum}");
+        }
+
+        effectSound = gameObject.AddComponent<AudioSource>();
+        buttonSound = gameObject.AddComponent<AudioSource>();
+        sounds = new AudioClip[(int)soundList.MaxCount];
+        for (int i = 0; i < (int)soundList.MaxCount; i++)
+        {
+            soundList soundName = (soundList)i;
+            sounds[i] = Resources.Load<AudioClip>($"Sound/{soundName.ToString()}");
         }
 
         check_Place = new bool[(int)placing.MaxCount]; // 학생의 처음 생성 위치 및 엘리베이터 위치에 학생이 있는지 여부
@@ -125,9 +142,12 @@ public class GameManager : MonoBehaviour
     }
 
     #region 성공,실패
-    Button retry_BTN;
-    Button next_BTN;
-    Button exit_BTN;
+    public Button retry_BTN;
+    public Button next_BTN;
+    public Button exit_BTN_Clear;
+    public Button exit_BTN_Fail;
+    public GameObject clearScreen;
+    public GameObject failScreen;
 
     public bool checkGoal() // 목표 인원에 도달했으면 true
     {
@@ -141,6 +161,7 @@ public class GameManager : MonoBehaviour
 
     void StageClear() // checkGoal 수행 후 true이면 반환, stageNum을 +1, 다음 스테이지, 게임 종료 버튼 출현
     {
+        PlaySound(sounds[(int)soundList.Clear]);
         if (stageNum == 9)
             stageNum = 0;
         else
@@ -148,15 +169,13 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetInt("savedStage", stageNum);
         PlayerPrefs.Save();
         UIManager.Instance.disableElv();
-        Instantiate(Resources.Load($"StageClear"));
         foreach (Tuple<GameObject, Student> student in this.students)
         {
             Destroy(student.Item1);
         }
-        exit_BTN = GameObject.Find("ExitGameButton_Clear").GetComponent<Button>();
-        exit_BTN.onClick.AddListener(ExitGame);
-        next_BTN = GameObject.Find("NextButton").GetComponent<Button>();
-        next_BTN.onClick.AddListener(StageRetry);
+        clearScreen.SetActive(true);
+        next_BTN.gameObject.SetActive(true);
+        exit_BTN_Clear.gameObject.SetActive(true);
     }
 
     public void CallFailed()
@@ -166,43 +185,29 @@ public class GameManager : MonoBehaviour
 
     void StageFailed() // 제한시간 경과 시 실패, 스테이지 재시도 및 게임 종료 버튼 출현
     {
+        PlaySound(sounds[(int)soundList.Fail]);
         UIManager.Instance.disableElv();
-        Instantiate(Resources.Load($"StageFailed"));
         foreach(Tuple<GameObject, Student> student in this.students) 
         {
             Destroy(student.Item1);
         }
-        exit_BTN = GameObject.Find("ExitGameButton_Failed").GetComponent<Button>();
-        exit_BTN.onClick.AddListener(ExitGame);
-        retry_BTN = GameObject.Find("RetryButton").GetComponent<Button>();
-        retry_BTN.onClick.AddListener(StageRetry);
-    }
-
-    void StageRetry()
-    {
-        SceneManager.LoadScene(1);
-    }
-    void ExitGame()
-    {
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-        Application.Quit(); // 어플리케이션 종료
-#endif
+        failScreen.SetActive(true);
+        retry_BTN.gameObject.SetActive(true);
+        exit_BTN_Fail.gameObject.SetActive(true);
     }
     #endregion
 
     #region 엘리베이터 문 여닫기
     public void DoorClose()
     {
-        door_Left.transform.DOMoveX(-0.458f, 1);
-        door_Right.transform.DOMoveX(1.297f, 1);
+        door_Left.transform.DOMoveX(-0.458f, 0.5f);
+        door_Right.transform.DOMoveX(1.297f, 0.5f);
     }
 
     public void DoorOpen()
     {
-        door_Left.transform.DOMoveX(-2.278f, 1);
-        door_Right.transform.DOMoveX(3.13f, 1);
+        door_Left.transform.DOMoveX(-2.278f, 0.5f);
+        door_Right.transform.DOMoveX(3.13f, 0.5f);
     }
     #endregion
 
@@ -210,10 +215,7 @@ public class GameManager : MonoBehaviour
     int eSpeed = 1;
     IEnumerator UpFloor()
     {
-        if (stageNum > 5)
-            eSpeed = 2;
-        
-        yield return new WaitForSeconds(eSpeed);
+        yield return new WaitForSeconds(0.5f);
 
         floor++;
         UIManager.Instance.changeFloor();
@@ -221,12 +223,8 @@ public class GameManager : MonoBehaviour
     }
 
     IEnumerator DownFloor()
-    {
-        int eSpeed = 1;
-        if (stageNum > 5)
-            eSpeed = 2;
-        
-        yield return new WaitForSeconds(eSpeed);
+    {    
+        yield return new WaitForSeconds(0.5f);
 
         floor--;
         UIManager.Instance.changeFloor();
@@ -240,6 +238,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(eSpeed);
         UIManager.Instance.addStageTime(eSpeed);
         Debug.Log("doorclose");
+        PlaySound(sounds[(int)soundList.ElevatorMove]);
         foreach (Tuple<GameObject, Student> student in students)
         {
             if(student.Item2.nowFloor!=-1)
@@ -254,7 +253,8 @@ public class GameManager : MonoBehaviour
             if(student.Item2.nowFloor==floor)
                 student.Item1.SetActive(true);
         }
-        yield return new WaitForSeconds(eSpeed);
+        yield return new WaitForSeconds(0.5f);
+        PlaySound(sounds[(int)soundList.Arrive]);
         ActiveStudents(f);
         ChangeBack(f);
         DoorOpen();
@@ -273,6 +273,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(eSpeed);
         UIManager.Instance.addStageTime(eSpeed);
         Debug.Log("doorclose");
+        PlaySound(sounds[(int)soundList.ElevatorMove]);
         foreach (Tuple<GameObject, Student> student in students)
         {
             if (student.Item2.nowFloor != -1)
@@ -287,7 +288,8 @@ public class GameManager : MonoBehaviour
             if (student.Item2.nowFloor == floor)
                 student.Item1.SetActive(true);
         }
-        yield return new WaitForSeconds(eSpeed);
+        yield return new WaitForSeconds(0.5f);
+        PlaySound(sounds[(int)soundList.Arrive]);
         ActiveStudents(f);
         ChangeBack(f);
         DoorOpen();
@@ -314,7 +316,6 @@ public class GameManager : MonoBehaviour
         studentComponent.nowFloor = nf;
         studentComponent.goalFloor = gf;
         studentComponent.orderPlace = op;
-        //studentComponent.activeTime = at;
         studentObject.transform.position = place[op];
         studentObject.SetActive(false);
         check_Out[nf, op] = true;
@@ -347,4 +348,47 @@ public class GameManager : MonoBehaviour
             existenceMarks[f].SetActive(false);
     }
     #endregion
+
+    public void PlaySound(AudioClip clip)
+    {
+        effectSound.clip = clip;
+        effectSound.Play();
+    }
+
+    public void PlaySound2(AudioClip clip)
+    {
+        buttonSound.clip = clip;
+        buttonSound.Play();
+    }
+
+    IEnumerator gameStart()
+    {
+        PlaySound(sounds[(int)soundList.Button]);
+        yield return new WaitForSeconds(0.35f);
+        SceneManager.LoadScene(1);
+    }
+
+    IEnumerator exitGame()
+    {
+        PlaySound(sounds[(int)soundList.Button]);
+        yield return new WaitForSeconds(0.35f);
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit(); // 어플리케이션 종료
+#endif
+    }
+
+    //void PlayLoopingSound()
+    //{
+    //    effectSound.clip = sounds[(int)soundList.ElevatorMove];
+    //    effectSound.loop = true;
+    //    effectSound.Play();
+    //}
+
+    //void StopLoopingSound()
+    //{
+    //    effectSound.loop = false;
+    //    effectSound.Stop();
+    //}
 }

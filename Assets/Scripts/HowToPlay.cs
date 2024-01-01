@@ -12,34 +12,34 @@ public class HowToPlay : MonoBehaviour
     public GameObject images_HowToPlay; // 인스펙터 조작
     public GameObject btn_NextPage;
     public GameObject btn_PrevPage;
+    public GameObject btn_CloseHow;
     public GameObject popup_HowToPlay;
     int nowPage;
-
-    //private void Awake()
-    //{
-    //    popup_HowToPlay.SetActive(false);
-    //    images_HowToPlay.SetActive(false);
-    //    btn_NextPage.SetActive(false);
-    //    btn_PrevPage.SetActive(false);
-    //    nowPage = 0;
-    //    _Instance = this; // NULL 방지
-    //}
+    AudioSource audioSource;
+    AudioClip audioClip;
+    AudioClip audioClip2;
 
     public void OpenHowToPlay() // 게임 방법 창 열기, 시작 화면 HowToPlayButton이 보유
     {
-        popup_HowToPlay.SetActive(true);
         images_HowToPlay.SetActive(true);
         btn_NextPage.SetActive(true);
         btn_PrevPage.SetActive(true);
+        btn_CloseHow.SetActive(true);
+        PlayHow(audioClip2);
     } 
 
     public void CloseHowToPlay() // 게임 방법 창 닫기
     {
-        popup_HowToPlay.SetActive(false);
+        PlayHow(audioClip2);
+        images_HowToPlay.SetActive(false);
+        btn_NextPage.SetActive(false);
+        btn_PrevPage.SetActive(false);
+        btn_CloseHow.SetActive(false);
     }
 
     public void NextPage()
     {
+        PlayHow(audioClip);
         //if(nowPage<images_HowToPlay.Length - 1) 
         //{
         //    images_HowToPlay[nowPage].SetActive(false);
@@ -50,11 +50,25 @@ public class HowToPlay : MonoBehaviour
 
     public void PrevPage()
     {
+        PlayHow(audioClip);
         //if (nowPage > 0)
         //{
         //    images_HowToPlay[nowPage].SetActive(false);
         //    nowPage--;
         //    images_HowToPlay[nowPage].SetActive(true);
         //}
+    }
+
+    void PlayHow(AudioClip clip)
+    {
+        audioSource.clip = clip;
+        audioSource.Play();
+    }
+
+    private void Start()
+    {
+        audioSource = gameObject.AddComponent<AudioSource>();
+        audioClip = Resources.Load<AudioClip>("Sound/SlideHow");
+        audioClip2 = Resources.Load<AudioClip>("Sound/Button");
     }
 }

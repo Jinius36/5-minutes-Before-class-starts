@@ -71,6 +71,9 @@ TagManager:
   - name: DragTop
     uniqueID: 63521661
     locked: 0
+  - name: FloorPopUp
+    uniqueID: 4199112157
+    locked: 0
   - name: UI
     uniqueID: 1224240059
     locked: 0

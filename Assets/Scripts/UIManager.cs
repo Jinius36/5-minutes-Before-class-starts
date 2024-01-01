@@ -121,6 +121,7 @@ public class UIManager : MonoBehaviour
     #region 엘리베이터 버튼
     public void MoveElevator(int i)
     {
+        GameManager.Instance.PlaySound2(GameManager.Instance.sounds[(int)GameManager.soundList.ElvButton]);
         int f = GameManager.Instance.floor;
         if (f != i)
         {

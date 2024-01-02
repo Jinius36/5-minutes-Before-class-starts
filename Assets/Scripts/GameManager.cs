@@ -84,6 +84,17 @@ public class GameManager : MonoBehaviour
             Debug.Log($"현재 스테이지: {stageNum}");
         }
 
+        arrow = GameObject.Find("Arrow").GetComponent<Image>();
+        arrow.gameObject.SetActive(false);
+        for( int i = 0; i < 4; i++)
+        {
+            arrowMotion[i] = Resources.Load<Sprite>($"Sprites/Pannel_Images/Pannel_Up_{i}");
+        }
+        for (int i = 4; i < 8; i++)
+        {
+            arrowMotion[i] = Resources.Load<Sprite>($"Sprites/Pannel_Images/Pannel_Down_{i-4}");
+        }
+
         effectSound = gameObject.AddComponent<AudioSource>();
         buttonSound = gameObject.AddComponent<AudioSource>();
         sounds = new AudioClip[(int)soundList.MaxCount];
@@ -148,6 +159,8 @@ public class GameManager : MonoBehaviour
     public Button exit_BTN_Fail;
     public GameObject clearScreen;
     public GameObject failScreen;
+    public TextMeshProUGUI clearText;
+    public TextMeshProUGUI failedText;
 
     public bool checkGoal() // 목표 인원에 도달했으면 true
     {
@@ -176,6 +189,7 @@ public class GameManager : MonoBehaviour
         clearScreen.SetActive(true);
         next_BTN.gameObject.SetActive(true);
         exit_BTN_Clear.gameObject.SetActive(true);
+        clearText.text = $"목표: {goal}\n달성: {attend}";
     }
 
     public void CallFailed()
@@ -194,6 +208,7 @@ public class GameManager : MonoBehaviour
         failScreen.SetActive(true);
         retry_BTN.gameObject.SetActive(true);
         exit_BTN_Fail.gameObject.SetActive(true);
+        failedText.text = $"목표: {goal}\n달성: {attend}";
     }
     #endregion
 
@@ -213,6 +228,54 @@ public class GameManager : MonoBehaviour
 
     #region 엘리베이터 코루틴
     int eSpeed = 1;
+    int arrowNum = 1;
+    Image arrow;
+    Sprite[] arrowMotion = new Sprite[8];
+
+    IEnumerator ArrowUping(int f)
+    {
+        arrowNum = 0;
+        arrow.gameObject.SetActive(true);
+        arrow.sprite = arrowMotion[0];
+        while(floor!=f)
+        {
+            arrowNum++;
+            if (arrowNum > 3)
+                arrowNum = 0;
+            yield return StartCoroutine(ArrowUp());
+        }
+        arrowNum = 0;
+        arrow.gameObject.SetActive(false);
+    }
+
+    IEnumerator ArrowUp()
+    {
+        yield return new WaitForSeconds(0.5f);
+        arrow.sprite = arrowMotion[arrowNum];
+    }
+
+    IEnumerator ArrowDowning(int f)
+    {
+        arrowNum = 0;
+        arrow.gameObject.SetActive(true);
+        arrow.sprite = arrowMotion[4];
+        while (floor != f)
+        {
+            arrowNum++;
+            if (arrowNum > 3)
+                arrowNum = 0;
+            yield return StartCoroutine(ArrowDown());
+        }
+        arrowNum = 0;
+        arrow.gameObject.SetActive(false);
+    }
+
+    IEnumerator ArrowDown()
+    {
+        yield return new WaitForSeconds(0.5f);
+        arrow.sprite = arrowMotion[arrowNum + 4];
+    }
+
     IEnumerator UpFloor()
     {
         yield return new WaitForSeconds(0.5f);
@@ -236,14 +299,14 @@ public class GameManager : MonoBehaviour
         Student.isElvMoving = true;
         DoorClose();
         yield return new WaitForSeconds(eSpeed);
-        UIManager.Instance.addStageTime(eSpeed);
         Debug.Log("doorclose");
-        PlaySound(sounds[(int)soundList.ElevatorMove]);
+        //PlaySound(sounds[(int)soundList.ElevatorMove]);
         foreach (Tuple<GameObject, Student> student in students)
         {
             if(student.Item2.nowFloor!=-1)
                 student.Item1.SetActive(false);
         }
+        StartCoroutine(ArrowUping(f));
         for (int i = floor; i < f; i++)
         {
                 yield return StartCoroutine(UpFloor());
@@ -258,7 +321,6 @@ public class GameManager : MonoBehaviour
         ActiveStudents(f);
         ChangeBack(f);
         DoorOpen();
-        UIManager.Instance.addStageTime(eSpeed);
         Debug.Log("dooropen");
         UIManager.Instance.enableElv(f);
         Student.isElvMoving = false;
@@ -271,14 +333,14 @@ public class GameManager : MonoBehaviour
         Student.isElvMoving = true;
         DoorClose();
         yield return new WaitForSeconds(eSpeed);
-        UIManager.Instance.addStageTime(eSpeed);
         Debug.Log("doorclose");
-        PlaySound(sounds[(int)soundList.ElevatorMove]);
+        //PlaySound(sounds[(int)soundList.ElevatorMove]);
         foreach (Tuple<GameObject, Student> student in students)
         {
             if (student.Item2.nowFloor != -1)
                 student.Item1.SetActive(false);
         }
+        StartCoroutine(ArrowDowning(f));
         for (int i = floor; i > f; i--)
         {
             yield return StartCoroutine(DownFloor());
@@ -293,7 +355,6 @@ public class GameManager : MonoBehaviour
         ActiveStudents(f);
         ChangeBack(f);
         DoorOpen();
-        UIManager.Instance.addStageTime(eSpeed);
         Debug.Log("dooropen");
         UIManager.Instance.enableElv(f);
         Student.isElvMoving = false;

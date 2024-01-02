@@ -9,9 +9,9 @@ public class Stage1 : MonoBehaviour
     int[] howManyStudent = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     void Start()
     {
-        GameManager.Instance.goal = 10;
+        GameManager.Instance.goal = 8;
         GameManager.Instance.limitTime = 60;
-        for(int i = 0; i < 5; i++)
+        for(int i = 0; i < 4; i++)
         {
             int s1 = Rand.Range(0, 2);
             int s2 = Rand.Range(0, 2);

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HowToPlay : MonoBehaviour
 {
@@ -13,8 +14,9 @@ public class HowToPlay : MonoBehaviour
     public GameObject btn_NextPage;
     public GameObject btn_PrevPage;
     public GameObject btn_CloseHow;
-    public GameObject popup_HowToPlay;
-    int nowPage;
+    public Image tuto;
+    Sprite[] tuto_Images=new Sprite[3];
+    int nowPage = 0;
     AudioSource audioSource;
     AudioClip audioClip;
     AudioClip audioClip2;
@@ -25,6 +27,7 @@ public class HowToPlay : MonoBehaviour
         btn_NextPage.SetActive(true);
         btn_PrevPage.SetActive(true);
         btn_CloseHow.SetActive(true);
+        tuto.gameObject.SetActive(true);
         PlayHow(audioClip2);
     } 
 
@@ -35,28 +38,27 @@ public class HowToPlay : MonoBehaviour
         btn_NextPage.SetActive(false);
         btn_PrevPage.SetActive(false);
         btn_CloseHow.SetActive(false);
+        tuto.gameObject.SetActive(false);
     }
 
     public void NextPage()
     {
-        PlayHow(audioClip);
-        //if(nowPage<images_HowToPlay.Length - 1) 
-        //{
-        //    images_HowToPlay[nowPage].SetActive(false);
-        //    nowPage++;
-        //    images_HowToPlay[nowPage].SetActive(true);
-        //}
+        if(nowPage != 2)
+        {
+            PlayHow(audioClip);
+            nowPage++;
+            tuto.sprite = tuto_Images[nowPage];
+        }
     }
 
     public void PrevPage()
     {
-        PlayHow(audioClip);
-        //if (nowPage > 0)
-        //{
-        //    images_HowToPlay[nowPage].SetActive(false);
-        //    nowPage--;
-        //    images_HowToPlay[nowPage].SetActive(true);
-        //}
+        if (nowPage != 0)
+        {
+            PlayHow(audioClip);
+            nowPage--;
+            tuto.sprite = tuto_Images[nowPage];
+        }
     }
 
     void PlayHow(AudioClip clip)
@@ -70,5 +72,8 @@ public class HowToPlay : MonoBehaviour
         audioSource = gameObject.AddComponent<AudioSource>();
         audioClip = Resources.Load<AudioClip>("Sound/SlideHow");
         audioClip2 = Resources.Load<AudioClip>("Sound/Button");
+        tuto_Images[0] = Resources.Load<Sprite>("Sprites/Tut1");
+        tuto_Images[1] = Resources.Load<Sprite>("Sprites/Tut2");
+        tuto_Images[2] = Resources.Load<Sprite>("Sprites/Tut3");
     }
 }

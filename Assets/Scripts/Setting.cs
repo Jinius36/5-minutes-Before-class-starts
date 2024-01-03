@@ -83,6 +83,7 @@ public class Setting : MonoBehaviour
     IEnumerator gameStart()
     {
         PlaySoundSet();
+        Student.isOnSetting = false;
         yield return new WaitForSeconds(0.35f);
         SceneManager.LoadScene(1);
     }
@@ -90,6 +91,7 @@ public class Setting : MonoBehaviour
     IEnumerator exitGame()
     {
         PlaySoundSet();
+        Student.isOnSetting = false;
         yield return new WaitForSeconds(0.35f);
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;

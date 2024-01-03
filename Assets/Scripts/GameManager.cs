@@ -78,8 +78,6 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            PlayerPrefs.SetInt("savedStage", 1);
-            PlayerPrefs.Save();
             stageNum = PlayerPrefs.GetInt("savedStage");
             Debug.Log($"현재 스테이지: {stageNum}");
         }
@@ -146,7 +144,7 @@ public class GameManager : MonoBehaviour
             backgrounds[i] = Resources.Load<Sprite>($"Sprites/Background_Images/Back{i}");
         }
 
-        stage = Resources.Load<GameObject>($"Stage{stageNum}"); // 스테이지 불러오기
+        stage = Resources.Load<GameObject>($"Stage"); // 스테이지 불러오기
         Instantiate(stage);
 
         
@@ -176,7 +174,7 @@ public class GameManager : MonoBehaviour
     {
         PlaySound(sounds[(int)soundList.Clear]);
         if (stageNum == 9)
-            stageNum = 0;
+            stageNum = 1;
         else
             stageNum++;
         PlayerPrefs.SetInt("savedStage", stageNum);
@@ -250,7 +248,7 @@ public class GameManager : MonoBehaviour
 
     IEnumerator ArrowUp()
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.3f);
         arrow.sprite = arrowMotion[arrowNum];
     }
 
@@ -272,7 +270,7 @@ public class GameManager : MonoBehaviour
 
     IEnumerator ArrowDown()
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.3f);
         arrow.sprite = arrowMotion[arrowNum + 4];
     }
 
@@ -299,7 +297,6 @@ public class GameManager : MonoBehaviour
         Student.isElvMoving = true;
         DoorClose();
         yield return new WaitForSeconds(eSpeed);
-        Debug.Log("doorclose");
         //PlaySound(sounds[(int)soundList.ElevatorMove]);
         foreach (Tuple<GameObject, Student> student in students)
         {
@@ -321,7 +318,6 @@ public class GameManager : MonoBehaviour
         ActiveStudents(f);
         ChangeBack(f);
         DoorOpen();
-        Debug.Log("dooropen");
         UIManager.Instance.enableElv(f);
         Student.isElvMoving = false;
         if (stageTime >= limitTime)
@@ -333,7 +329,6 @@ public class GameManager : MonoBehaviour
         Student.isElvMoving = true;
         DoorClose();
         yield return new WaitForSeconds(eSpeed);
-        Debug.Log("doorclose");
         //PlaySound(sounds[(int)soundList.ElevatorMove]);
         foreach (Tuple<GameObject, Student> student in students)
         {
@@ -355,7 +350,6 @@ public class GameManager : MonoBehaviour
         ActiveStudents(f);
         ChangeBack(f);
         DoorOpen();
-        Debug.Log("dooropen");
         UIManager.Instance.enableElv(f);
         Student.isElvMoving = false;
         if (stageTime >= limitTime)
@@ -369,17 +363,16 @@ public class GameManager : MonoBehaviour
     #endregion
 
     #region 학생 관리
-    public Tuple<GameObject,Student> Spawn(int s, int nf, int gf, int op) // 학생 소환
+    public Tuple<GameObject,Student> Spawn(int sex, int spawnFloor, int goalFloor, int orderPlace) // 학생 소환
     {
         GameObject studentObject = Instantiate(Resources.Load("Student")) as GameObject;
         Student studentComponent = studentObject.AddComponent<Student>();
-        studentComponent.sex = s;
-        studentComponent.nowFloor = nf;
-        studentComponent.goalFloor = gf;
-        studentComponent.orderPlace = op;
-        studentObject.transform.position = place[op];
+        studentComponent.sex = sex;
+        studentComponent.nowFloor = spawnFloor;
+        studentComponent.goalFloor = goalFloor;
+        studentComponent.orderPlace = orderPlace;
+        studentObject.transform.position = place[orderPlace];
         studentObject.SetActive(false);
-        check_Out[nf, op] = true;
         return Tuple.Create(studentObject,studentComponent);
     }
 
@@ -421,35 +414,4 @@ public class GameManager : MonoBehaviour
         buttonSound.clip = clip;
         buttonSound.Play();
     }
-
-    IEnumerator gameStart()
-    {
-        PlaySound(sounds[(int)soundList.Button]);
-        yield return new WaitForSeconds(0.35f);
-        SceneManager.LoadScene(1);
-    }
-
-    IEnumerator exitGame()
-    {
-        PlaySound(sounds[(int)soundList.Button]);
-        yield return new WaitForSeconds(0.35f);
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-        Application.Quit(); // 어플리케이션 종료
-#endif
-    }
-
-    //void PlayLoopingSound()
-    //{
-    //    effectSound.clip = sounds[(int)soundList.ElevatorMove];
-    //    effectSound.loop = true;
-    //    effectSound.Play();
-    //}
-
-    //void StopLoopingSound()
-    //{
-    //    effectSound.loop = false;
-    //    effectSound.Stop();
-    //}
 }

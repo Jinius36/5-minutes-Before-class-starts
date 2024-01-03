@@ -12,29 +12,28 @@ public class Student : MonoBehaviour
     public int nowFloor; // 현재 위치한 층, -1은 엘리베이터 탑승
     public int goalFloor; // 목표 층
     public int orderPlace; // 서있는 위치
-
-    Vector3 mousepoz;
-    SpriteRenderer[] draglayer;
-    
-    Canvas canvas;
-    TextMeshProUGUI text;
-
-    bool isDragging = false;
-    [SerializeField] bool isOnElevator = false;
-    [SerializeField] bool isAtOutside = true;
-    public static bool isOnSetting = false;
-    public static bool isElvMoving = false;
+    Canvas bubble;
+    TextMeshProUGUI goalText;
 
     #region 드래그 앤 드롭
+    Vector3 mousepoz;
+    SpriteRenderer[] draglayer;
+    bool isDragging = false;
+    bool isAtOutside = true;
+    public static bool isOnSetting = false;
+    public static bool isElvMoving = false;
+    private void ResetPlace()
+    {
+        transform.position = GameManager.Instance.place[orderPlace];
+    }
     private void OnMouseDown()
     {
         if (!isOnSetting && !isElvMoving)
         {
             isDragging = true;
-            canvas.gameObject.SetActive(true);
+            bubble.gameObject.SetActive(true);
         }
     }
-
     private void OnMouseDrag()
     {
         for(int i=0; i<5; i++)
@@ -59,19 +58,13 @@ public class Student : MonoBehaviour
                 default: break;
             }
         }
-        canvas.sortingOrder = -1;
+        bubble.sortingOrder = -1;
         if (isDragging)
         {
             mousepoz = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10);
             transform.position = Camera.main.ScreenToWorldPoint(mousepoz);
         }
     }
-
-    private void ResetPlace()
-    {
-        transform.position = GameManager.Instance.place[orderPlace];
-    }
-
     private void OnMouseUp()
     {
         for (int i = 0; i < 5; i++)
@@ -96,30 +89,34 @@ public class Student : MonoBehaviour
                 default: break;
             }
         }
-        canvas.sortingOrder = -2;
+        bubble.sortingOrder = -2;
         isDragging = false;
         int p = 0;
-        if(transform.position.x <= -1.0f || transform.position.x >= 1.8f 
+        if (transform.position.x <= -1.0f || transform.position.x >= 1.8f 
             || transform.position.y >= 3.0f || transform.position.y <= -5.0f) // 너무 벗어났다면 원위치
         {
             if(orderPlace>2)
-                canvas.gameObject.SetActive(false);
+                bubble.gameObject.SetActive(false);
             ResetPlace();
             return;
         }
-        else if(transform.position.x > -1.0f && transform.position.x <= -0.175f) // x 위치 판정
+        else
         {
-            p = 0;
-        }
-        else if (transform.position.x > -0.175f && transform.position.x < 0.975f)
-        {
-            p = 1;
-        }
-        else if (transform.position.x >= 0.975f && transform.position.x < 1.8f)
-        {
-            p = 2;
-        }
+            switch (transform.position.x)
+            {
+                case var n when n > -1.0f && n <= -0.175f:
+                    p = 0;
+                    break;
 
+                case var n when n > -0.175f && n < 0.975f:
+                    p = 1;
+                    break;
+
+                case var n when n >= 0.975f && n < 1.8f:
+                    p = 2;
+                    break;
+            }
+        }
         if (isAtOutside) // 밖에다 놨다면
         {
             if (goalFloor == GameManager.Instance.floor) // 원하는 층에 도착한 상황
@@ -131,7 +128,6 @@ public class Student : MonoBehaviour
                     GameManager.Instance.CallClear();
                 Destroy(gameObject);
             }
-
             //if (!GameManager.Instance.check_Out[nowFloor,p]) // 내린 층이 원하는 층이 아니고 그 층 중에 빈 자리에 배치함
             //{
             //    nowFloor = GameManager.Instance.floor;
@@ -143,86 +139,52 @@ public class Student : MonoBehaviour
             //    orderPlace = p;
             //    GameManager.Instance.check_Out[nowFloor, p] = true;
             //}
-
             else // 내린 층이 원하는 층이 아님
             {
                 ResetPlace();
                 if (!isOnSetting && orderPlace > 2)
-                    canvas.gameObject.SetActive(false);
+                    bubble.gameObject.SetActive(false);
                 return;
             }
         }
         else // 엘리베이터에 놨다면
         {
-            if(transform.position.y > -2.65f) 
-            {
-
+            if(transform.position.y > -2.65f)
                 p += 3;
-                if (!GameManager.Instance.check_Place[p])
+            else
+                p += 6;
+            if (!GameManager.Instance.check_Place[p])
+            {
+                //GameManager.Instance.PlaySound(GameManager.Instance.sounds[(int)GameManager.soundList.StudentMove]);
+                transform.position = GameManager.Instance.place[p];
+                if (orderPlace > 2) // 엘리베이터에서 엘리베이터로 배치한 경우
+                    GameManager.Instance.check_Place[orderPlace] = false;
+                else // 밖에서 엘리베이터에 배치한 경우
                 {
-                    //GameManager.Instance.PlaySound(GameManager.Instance.sounds[(int)GameManager.soundList.StudentMove]);
-                    transform.position = GameManager.Instance.place[p];
-                    if (orderPlace > 2) // 엘리베이터에서 엘리베이터로 배치한 경우
-                        GameManager.Instance.check_Place[orderPlace] = false;
-                    else // 밖에서 엘리베이터에 배치한 경우
-                    { 
-                        GameManager.Instance.check_Out[nowFloor, orderPlace] = false;
-                        GameManager.Instance.checkExistence(nowFloor);
-                    }
-                    orderPlace = p;
-                    GameManager.Instance.check_Place[p] = true;
-                    nowFloor = -1;
-                    if (!isOnSetting)
-                        canvas.gameObject.SetActive(false);
+                    GameManager.Instance.check_Out[nowFloor, orderPlace] = false;
+                    GameManager.Instance.checkExistence(nowFloor);
                 }
-                else
-                {
-                    ResetPlace();
-                    if (!isOnSetting)
-                        canvas.gameObject.SetActive(false);
-                    return;
-                }
+                orderPlace = p;
+                GameManager.Instance.check_Place[p] = true;
+                nowFloor = -1;
+                if (!isOnSetting)
+                    bubble.gameObject.SetActive(false);
             }
             else
             {
-                p += 6;
-                if (!GameManager.Instance.check_Place[p])
-                {
-                    //GameManager.Instance.PlaySound(GameManager.Instance.sounds[(int)GameManager.soundList.StudentMove]);
-                    transform.position = GameManager.Instance.place[p];
-                    if (orderPlace > 2) // 엘리베이터에서 엘리베이터로 배치한 경우
-                        GameManager.Instance.check_Place[orderPlace] = false;
-                    else // 밖에서 엘리베이터에 배치한 경우
-                    {
-                        GameManager.Instance.check_Out[nowFloor, orderPlace] = false;
-                        GameManager.Instance.checkExistence(nowFloor);
-                    }
-                    orderPlace = p;
-                    GameManager.Instance.check_Place[p] = true;
-                    nowFloor = -1;
-                    if (!isOnSetting)
-                        canvas.gameObject.SetActive(false);
-                }
-                else
-                {
-                    ResetPlace();
-                    if (!isOnSetting)
-                        canvas.gameObject.SetActive(false);
-                    return;
-                }
+                ResetPlace();
+                if (!isOnSetting)
+                    bubble.gameObject.SetActive(false);
+                return;
             }
         }
     }
-
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        isOnElevator = true;
         isAtOutside = false;
     }
-
     private void OnTriggerExit2D(Collider2D collision)
     {
-        isOnElevator = false;
         isAtOutside = true;
     }
     #endregion
@@ -237,14 +199,13 @@ public class Student : MonoBehaviour
                 draglayer[i] = child.GetComponent<SpriteRenderer>();
             i++;
         }
-        
-        canvas = GetComponentInChildren<Canvas>();
-        text = canvas.GetComponentInChildren<TextMeshProUGUI>();
+        bubble = GetComponentInChildren<Canvas>();
+        goalText = bubble.GetComponentInChildren<TextMeshProUGUI>();
         if (goalFloor == 0)
-            text.text = "B2";
+            goalText.text = "B2";
         if (goalFloor == 1)
-            text.text = "L";
+            goalText.text = "L";
         if (goalFloor >= 2)
-            text.text = $"{goalFloor - 1}";
+            goalText.text = $"{goalFloor - 1}";
     }
 }

@@ -812,7 +812,7 @@ RectTransform:
   m_GameObject: {fileID: 1999725658}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.96, y: 0.96, z: 1}
+  m_LocalScale: {x: 1.15, y: 1.15, z: 1}
   m_Children: []
   m_Father: {fileID: 2056038234}
   m_RootOrder: 2
@@ -939,7 +939,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cb8c2469d730b349b24e7f90e023141, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  images_HowToPlay: {fileID: 3281930964579105939}
+  teduri: {fileID: 3281930964579105939}
   btn_NextPage: {fileID: 6305750844416087168}
   btn_PrevPage: {fileID: 6305750843756688537}
   btn_CloseHow: {fileID: 3599679533082790302}
@@ -1263,7 +1263,7 @@ RectTransform:
   m_GameObject: {fileID: 3281930964579105939}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.2, y: 1.2, z: 1}
   m_Children: []
   m_Father: {fileID: 2056038234}
   m_RootOrder: 3
@@ -1285,7 +1285,7 @@ GameObject:
   - component: {fileID: 3281930964579105948}
   - component: {fileID: 3281930964579105949}
   m_Layer: 5
-  m_Name: Page
+  m_Name: Teduri
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1345,7 +1345,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 317, y: 856}
+  m_AnchoredPosition: {x: 401, y: 1057}
   m_SizeDelta: {x: 192, y: 192}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &3599679533082790302

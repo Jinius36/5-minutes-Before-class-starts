@@ -11,6 +11,7 @@ public class Stage : MonoBehaviour
     int sex;
     int goalFloor;
     int orderPlace;
+
     void Start()
     {
         switch (GameManager.Instance.stageNum)

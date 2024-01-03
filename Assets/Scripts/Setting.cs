@@ -33,7 +33,6 @@ public class Setting : MonoBehaviour
         exit_BTN = GameObject.Find("ExitGameButton_Set").GetComponent<Button>();
         exit_BTN.onClick.AddListener(ExitGame);
     }
-
     public void OpenSettingAtStart()
     {
         PlaySoundSet();
@@ -46,7 +45,6 @@ public class Setting : MonoBehaviour
         exit_BTN = GameObject.Find("ExitGameButton_Set").GetComponent<Button>();
         exit_BTN.onClick.AddListener(ExitGame);
     }
-
     public void CloseSetting()
     {
         PlaySoundSet();
@@ -55,31 +53,26 @@ public class Setting : MonoBehaviour
         UIManager.Instance.enableElv();
         Student.isOnSetting = false;
     }
-
     public void CloseSettingAtStart()
     {
         PlaySoundSet();
         Destroy(setting);
         set_BTN.interactable = true;
     }
-
     public void GameStart() // GameStartButton¿Ã ∫∏¿Ø
     {
         StartCoroutine(gameStart());
     }
-
     public void ExitGame()
     {
         StartCoroutine(exitGame());
     }
-
     void PlaySoundSet()
     {
         AudioClip clip = setSound;
         buttonSound.clip = clip;
         buttonSound.Play();
     }
-
     IEnumerator gameStart()
     {
         PlaySoundSet();
@@ -87,7 +80,6 @@ public class Setting : MonoBehaviour
         yield return new WaitForSeconds(0.35f);
         SceneManager.LoadScene(1);
     }
-
     IEnumerator exitGame()
     {
         PlaySoundSet();
@@ -100,7 +92,7 @@ public class Setting : MonoBehaviour
 #endif
     }
 
-    private void Start()
+    void Start()
     {
         setSound = Resources.Load<AudioClip>("Sound/Button");
         buttonSound = gameObject.AddComponent<AudioSource>();

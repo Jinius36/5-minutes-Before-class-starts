@@ -4735,9 +4735,9 @@ MonoBehaviour:
   retry_BTN: {fileID: 5226998831488061803}
   next_BTN: {fileID: 6401380168581721911}
   exit_BTN_Clear: {fileID: 1135486338031732212}
-  exit_BTN_Fail: {fileID: 4784905121195397369}
+  exit_BTN_Failed: {fileID: 4784905121195397369}
   clearScreen: {fileID: 1392252013213613769}
-  failScreen: {fileID: 6556846088067274966}
+  failedScreen: {fileID: 6556846088067274966}
   clearText: {fileID: 845017939}
   failedText: {fileID: 1079178819}
 --- !u!4 &2094885470

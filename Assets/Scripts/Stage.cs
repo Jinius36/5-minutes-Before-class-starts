@@ -17,15 +17,15 @@ public class Stage : MonoBehaviour
         switch (GameManager.Instance.stageNum)
         {
             case 1:
-                GameManager.Instance.goal = 7;
+                GameManager.Instance.goal = 8;
                 GameManager.Instance.limitTime = 30;
-                for (int i = 0; i < 7; i++)
+                for (int i = 0; i < 8; i++)
                 {
                     do
                     {
                         spawnFloor = Rand.Range(0, 11);
                     }
-                    while (howManyStudent[spawnFloor] > 2);
+                    while (howManyStudent[spawnFloor] > 1);
                     howManyStudent[spawnFloor] += 1;
 
                     sex = Rand.Range(0, 2);
@@ -48,15 +48,15 @@ public class Stage : MonoBehaviour
                 break;
 
             case 2:
-                GameManager.Instance.goal = 8;
+                GameManager.Instance.goal = 9;
                 GameManager.Instance.limitTime = 30;
-                for (int i = 0; i < 8; i++)
+                for (int i = 0; i < 9; i++)
                 {
                     do
                     {
                         spawnFloor = Rand.Range(0, 11);
                     }
-                    while (howManyStudent[spawnFloor] > 2);
+                    while (howManyStudent[spawnFloor] > 1);
                     howManyStudent[spawnFloor] += 1;
 
                     sex = Rand.Range(0, 2);
@@ -79,9 +79,9 @@ public class Stage : MonoBehaviour
                 break;
 
             case 3:
-                GameManager.Instance.goal = 9;
+                GameManager.Instance.goal = 10;
                 GameManager.Instance.limitTime = 30;
-                for (int i = 0; i < 9; i++)
+                for (int i = 0; i < 10; i++)
                 {
                     do
                     {
@@ -110,15 +110,15 @@ public class Stage : MonoBehaviour
                 break;
 
             case 4:
-                GameManager.Instance.goal = 8;
+                GameManager.Instance.goal = 11;
                 GameManager.Instance.limitTime = 30;
-                for (int i = 0; i < 8; i++)
+                for (int i = 0; i < 11; i++)
                 {
                     do
                     {
                         spawnFloor = Rand.Range(0, 11);
                     }
-                    while (howManyStudent[spawnFloor] > 1);
+                    while (howManyStudent[spawnFloor] > 2);
                     howManyStudent[spawnFloor] += 1;
 
                     sex = Rand.Range(0, 2);
@@ -141,7 +141,7 @@ public class Stage : MonoBehaviour
                 break;
 
             case 5:
-                GameManager.Instance.goal = 9;
+                GameManager.Instance.goal = 12;
                 GameManager.Instance.limitTime = 30;
                 for (int i = 0; i < 9; i++)
                 {
@@ -149,7 +149,7 @@ public class Stage : MonoBehaviour
                     {
                         spawnFloor = Rand.Range(0, 11);
                     }
-                    while (howManyStudent[spawnFloor] > 1);
+                    while (howManyStudent[spawnFloor] > 2);
                     howManyStudent[spawnFloor] += 1;
 
                     sex = Rand.Range(0, 2);
@@ -172,7 +172,7 @@ public class Stage : MonoBehaviour
                 break;
 
             case 6:
-                GameManager.Instance.goal = 10;
+                GameManager.Instance.goal = 13;
                 GameManager.Instance.limitTime = 30;
                 for (int i = 0; i < 10; i++)
                 {
@@ -180,7 +180,7 @@ public class Stage : MonoBehaviour
                     {
                         spawnFloor = Rand.Range(0, 11);
                     }
-                    while (howManyStudent[spawnFloor] > 1);
+                    while (howManyStudent[spawnFloor] > 2);
                     howManyStudent[spawnFloor] += 1;
 
                     sex = Rand.Range(0, 2);
@@ -203,7 +203,7 @@ public class Stage : MonoBehaviour
                 break;
 
             case 7:
-                GameManager.Instance.goal = 11;
+                GameManager.Instance.goal = 14;
                 GameManager.Instance.limitTime = 30;
                 for (int i = 0; i < 11; i++)
                 {
@@ -211,7 +211,7 @@ public class Stage : MonoBehaviour
                     {
                         spawnFloor = Rand.Range(0, 11);
                     }
-                    while (howManyStudent[spawnFloor] > 1);
+                    while (howManyStudent[spawnFloor] > 2);
                     howManyStudent[spawnFloor] += 1;
 
                     sex = Rand.Range(0, 2);
@@ -234,7 +234,7 @@ public class Stage : MonoBehaviour
                 break;
 
             case 8:
-                GameManager.Instance.goal = 12;
+                GameManager.Instance.goal = 15;
                 GameManager.Instance.limitTime = 30;
                 for (int i = 0; i < 12; i++)
                 {
@@ -242,7 +242,7 @@ public class Stage : MonoBehaviour
                     {
                         spawnFloor = Rand.Range(0, 11);
                     }
-                    while (howManyStudent[spawnFloor] > 1);
+                    while (howManyStudent[spawnFloor] > 2);
                     howManyStudent[spawnFloor] += 1;
 
                     sex = Rand.Range(0, 2);
@@ -265,7 +265,7 @@ public class Stage : MonoBehaviour
                 break;
 
             case 9:
-                GameManager.Instance.goal = 13;
+                GameManager.Instance.goal = 15;
                 GameManager.Instance.limitTime = 30;
                 for (int i = 0; i < 13; i++)
                 {
@@ -273,7 +273,7 @@ public class Stage : MonoBehaviour
                     {
                         spawnFloor = Rand.Range(0, 11);
                     }
-                    while (howManyStudent[spawnFloor] > 1);
+                    while (howManyStudent[spawnFloor] > 2);
                     howManyStudent[spawnFloor] += 1;
 
                     sex = Rand.Range(0, 2);

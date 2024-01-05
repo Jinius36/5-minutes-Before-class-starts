@@ -34,7 +34,7 @@ public class GameManager : MonoBehaviour
     public int attend = 0; // 해당 스테이지에서 목표층에 도달한 인원
     public int floor = 0; // 현재 층
     bool isSave; // 저장된 진행 상황이 있는지 확인
-    [SerializeField] GameObject stage; // 현재 스테이지
+    GameObject stage; // 현재 스테이지
 
     public enum placing // 위치 좌표 설정을 위한것들
     {

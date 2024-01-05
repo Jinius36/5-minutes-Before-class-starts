@@ -12,6 +12,11 @@ public class Student : MonoBehaviour
     public int nowFloor; // 현재 위치한 층, -1은 엘리베이터 탑승
     public int goalFloor; // 목표 층
     public int orderPlace; // 서있는 위치
+    public SpriteRenderer hair;
+    public SpriteRenderer hairBack;
+    public SpriteRenderer face;
+    public SpriteRenderer top;
+    public SpriteRenderer pants;
     Canvas bubble;
     TextMeshProUGUI goalText;
 

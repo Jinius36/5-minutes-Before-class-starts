@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System;
 using DG.Tweening;
+using Rand = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
@@ -257,15 +258,59 @@ public class GameManager : MonoBehaviour
 
     #region 학생 관리
     public List<Tuple<GameObject, Student>> students = new List<Tuple<GameObject, Student>>(); // 개별 학생 스폰, 관리용
+    Sprite[] maleHairSprites;
+    Sprite[] femaleHairSprites;
+    Sprite[] backHairSprites;
+    Sprite[] faceSprites;
+    Sprite[] topSprites;
+    Sprite[] pantsSprites;
+    List<Tuple<int, int, int, int, int>> avoidDuplication = new List<Tuple<int, int, int, int, int>>();
     public Tuple<GameObject, Student> Spawn(int sex, int spawnFloor, int goalFloor, int orderPlace) // 학생 소환
     {
-        GameObject studentObject = Instantiate(Resources.Load("Student")) as GameObject;
-        Student studentComponent = studentObject.AddComponent<Student>();
+        GameObject studentObject = Instantiate(Resources.Load<GameObject>("Student"));
+        Student studentComponent = studentObject.GetComponent<Student>();
         studentComponent.sex = sex;
         studentComponent.nowFloor = spawnFloor;
         studentComponent.goalFloor = goalFloor;
         studentComponent.orderPlace = orderPlace;
         studentObject.transform.position = place[orderPlace];
+
+        int hair, face, top, pants;
+        do
+        {
+            if (sex == 0)
+            {
+                hair = Rand.Range(0, 6);
+                face = Rand.Range(0, 5);
+                top = Rand.Range(0, 8);
+                pants = Rand.Range(0, 3);
+            }
+            else
+            {
+                hair = Rand.Range(0, 6);
+                face = Rand.Range(0, 5);
+                top = Rand.Range(0, 8);
+                pants = Rand.Range(0, 6);
+            }
+        } while (avoidDuplication.Contains(Tuple.Create(sex, hair, face, top, pants)));
+        if (sex == 0)
+        {
+            studentComponent.hair.sprite = maleHairSprites[hair];
+            studentComponent.face.sprite = faceSprites[face];
+            studentComponent.top.sprite = topSprites[top];
+            studentComponent.pants.sprite = pantsSprites[pants];
+        }
+        else
+        {
+            studentComponent.hair.sprite = femaleHairSprites[hair];
+            if (hair < 3)
+                studentComponent.hairBack.sprite = backHairSprites[hair];
+            studentComponent.face.sprite = faceSprites[face];
+            studentComponent.top.sprite = topSprites[top];
+            studentComponent.pants.sprite = pantsSprites[pants];
+        }
+        avoidDuplication.Add(Tuple.Create(sex, hair,face,top,pants));
+
         studentObject.SetActive(false);
         return Tuple.Create(studentObject, studentComponent);
     }
@@ -370,6 +415,13 @@ public class GameManager : MonoBehaviour
         {
             backgrounds[i] = Resources.Load<Sprite>($"Sprites/Background_Images/Back{i}");
         }
+
+        maleHairSprites = Resources.LoadAll<Sprite>("Sprites/Human/Male_Hair");
+        femaleHairSprites = Resources.LoadAll<Sprite>("Sprites/Human/Female_Hair");
+        backHairSprites = Resources.LoadAll<Sprite>("Sprites/Human/Female_Hair_Back");
+        faceSprites = Resources.LoadAll<Sprite>("Sprites/Human/Face");
+        topSprites = Resources.LoadAll<Sprite>("Sprites/Human/Top");
+        pantsSprites = Resources.LoadAll<Sprite>("Sprites/Human/Pants");
 
         stage = Resources.Load<GameObject>($"Stage"); // 스테이지 불러오기
         Instantiate(stage);

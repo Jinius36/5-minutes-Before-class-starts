@@ -3,60 +3,55 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Audio;
 
 public class Setting : MonoBehaviour
 {
-    #region
+    #region 싱글톤
     private static Setting _Instance;
     public static Setting Instance {  get { return _Instance; } }
+    private void Awake()
+    {
+        if (_Instance == null)
+        {
+            _Instance = this;
+        }
+    }
     #endregion
 
-    GameObject setting;
-    public Button set_BTN;
-    Button set_CloseBTN;
-    Button retry_BTN;
-    Button exit_BTN;
-    AudioSource buttonSound;
-    AudioClip setSound;
+    public GameObject setting; // 세팅창 자체
+    public Button set_BTN; // 세팅창 여는 버튼
 
     public void OpenSetting()
     {
-        GameManager.Instance.PlaySound2(GameManager.Instance.sounds[(int)GameManager.soundList.Button]);
-        setting = Instantiate(Resources.Load("Popup_Setting") as GameObject);
+        PlaySFX(sounds[(int)soundList.Button]);
+        setting.SetActive(true);
         set_BTN.interactable = false;
         UIManager.Instance.disableElv();
         Student.isOnSetting = true;
-        set_CloseBTN = GameObject.Find("CloseSetButton").GetComponent<Button>();
-        set_CloseBTN.onClick.AddListener(CloseSetting);
-        retry_BTN= GameObject.Find("RetryButton_Set").GetComponent<Button>();
-        retry_BTN.onClick.AddListener(GameStart);
-        exit_BTN = GameObject.Find("ExitGameButton_Set").GetComponent<Button>();
-        exit_BTN.onClick.AddListener(ExitGame);
     }
     public void OpenSettingAtStart()
     {
-        PlaySoundSet();
-        setting = Instantiate(Resources.Load("Popup_Setting") as GameObject);
-        retry_BTN = GameObject.Find("RetryButton_Set").GetComponent<Button>();
-        retry_BTN.gameObject.SetActive(false);
+        PlaySFX(sounds[(int)soundList.Button]);
+        setting.SetActive(true);
         set_BTN.interactable = false;
-        set_CloseBTN = GameObject.Find("CloseSetButton").GetComponent<Button>();
-        set_CloseBTN.onClick.AddListener(CloseSettingAtStart);
-        exit_BTN = GameObject.Find("ExitGameButton_Set").GetComponent<Button>();
-        exit_BTN.onClick.AddListener(ExitGame);
     }
     public void CloseSetting()
     {
-        PlaySoundSet();
-        Destroy(setting);
+        PlaySFX(sounds[(int)soundList.Button]);
+        PlayerPrefs.SetFloat("savedSFX", sfxSlider.value);
+        PlayerPrefs.Save();
+        setting.SetActive(false);
         set_BTN.interactable = true;
         UIManager.Instance.enableElv();
         Student.isOnSetting = false;
     }
     public void CloseSettingAtStart()
     {
-        PlaySoundSet();
-        Destroy(setting);
+        PlaySFX(sounds[(int)soundList.Button]);
+        PlayerPrefs.SetFloat("savedSFX", sfxSlider.value);
+        PlayerPrefs.Save();
+        setting.SetActive(false);
         set_BTN.interactable = true;
     }
     public void GameStart() // GameStartButton이 보유
@@ -67,22 +62,16 @@ public class Setting : MonoBehaviour
     {
         StartCoroutine(exitGame());
     }
-    void PlaySoundSet()
-    {
-        AudioClip clip = setSound;
-        buttonSound.clip = clip;
-        buttonSound.Play();
-    }
     IEnumerator gameStart()
     {
-        PlaySoundSet();
+        PlaySFX(sounds[(int)soundList.Button]);
         Student.isOnSetting = false;
         yield return new WaitForSeconds(0.35f);
         SceneManager.LoadScene(1);
     }
     IEnumerator exitGame()
     {
-        PlaySoundSet();
+        PlaySFX(sounds[(int)soundList.Button]);
         Student.isOnSetting = false;
         yield return new WaitForSeconds(0.35f);
 #if UNITY_EDITOR
@@ -92,9 +81,115 @@ public class Setting : MonoBehaviour
 #endif
     }
 
+    #region 사운드
+    public AudioSource sfxSound; // 게임내의 모든 버튼을 눌렀을 때 나오는 사운드
+    //[SerializeField] AudioSource sfxSound2;
+    public enum soundList
+    {
+        StudentMove, ElevatorMove, Arrive, Button, ElvButton, Clear, Fail, SlideHow, MaxCount
+    }
+    public AudioClip[] sounds;
+    public AudioMixer sfxMixer;
+    public Slider sfxSlider;
+    bool isSavedSXF;
+    public void PlaySFX(AudioClip clip)
+    {
+        sfxSound.clip = clip;
+        sfxSound.Play();
+    }
+    public void PlayBGM(AudioClip clip)
+    {
+
+    }
+    public void SFXControl()
+    {
+        float volume = sfxSlider.value;
+        if (volume == -40) sfxMixer.SetFloat("SFX", -80);
+        else sfxMixer.SetFloat("SFX", volume);
+        
+    }
+    #endregion
+
+    #region HowToPlay
+    public GameObject teduri;
+    public GameObject btn_NextPage;
+    public GameObject btn_PrevPage;
+    public GameObject btn_CloseHow;
+    public Image tuto;
+    Sprite[] tuto_Images = new Sprite[3];
+    int nowPage = 0;
+    public void OpenHowToPlay() // 게임 방법 창 열기, 시작 화면 HowToPlayButton이 보유
+    {
+        teduri.SetActive(true);
+        btn_NextPage.SetActive(true);
+        btn_CloseHow.SetActive(true);
+        tuto.gameObject.SetActive(true);
+        PlaySFX(sounds[(int)soundList.Button]);
+    }
+    public void CloseHowToPlay() // 게임 방법 창 닫기
+    {
+        PlaySFX(sounds[(int)soundList.Button]);
+        teduri.SetActive(false);
+        btn_NextPage.SetActive(false);
+        btn_PrevPage.SetActive(false);
+        btn_CloseHow.SetActive(false);
+        tuto.gameObject.SetActive(false);
+        nowPage = 0;
+        tuto.sprite = tuto_Images[nowPage];
+    }
+    public void NextPage()
+    {
+        btn_PrevPage.SetActive(true);
+        if (nowPage != 2)
+        {
+            PlaySFX(sounds[(int)soundList.SlideHow]);
+            nowPage++;
+            tuto.sprite = tuto_Images[nowPage];
+        }
+        if (nowPage == 2)
+            btn_NextPage.SetActive(false);
+    }
+    public void PrevPage()
+    {
+        btn_NextPage.SetActive(true);
+        if (nowPage != 0)
+        {
+            PlaySFX(sounds[(int)soundList.SlideHow]);
+            nowPage--;
+            tuto.sprite = tuto_Images[nowPage];
+        }
+        if (nowPage == 0)
+            btn_PrevPage.SetActive(false);
+    }
+    #endregion
     void Start()
     {
-        setSound = Resources.Load<AudioClip>("Sound/Button");
-        buttonSound = gameObject.AddComponent<AudioSource>();
+        isSavedSXF = PlayerPrefs.HasKey("savedSFX");
+        if (!isSavedSXF) 
+        {
+            sfxSlider.value = -20;
+        }
+        else
+        {
+            sfxSlider.value = PlayerPrefs.GetFloat("savedSFX");
+        }
+
+        sounds = new AudioClip[(int)soundList.MaxCount];
+        for (int i = 0; i < (int)soundList.MaxCount; i++)
+        {
+            soundList soundName = (soundList)i;
+            sounds[i] = Resources.Load<AudioClip>($"Sound/{soundName.ToString()}");
+        }
+        sfxSound = gameObject.AddComponent<AudioSource>();
+        sfxSound.outputAudioMixerGroup = sfxMixer.FindMatchingGroups("Master")[0];
+        //sfxSound2 = gameObject.AddComponent<AudioSource>();
+        //sfxSound2.outputAudioMixerGroup = sfxMixer.FindMatchingGroups("Master")[0];
+
+        if(SceneManager.GetActiveScene().buildIndex == 0)
+        {
+            tuto_Images[0] = Resources.Load<Sprite>("Sprites/Tut1");
+            tuto_Images[1] = Resources.Load<Sprite>("Sprites/Tut2");
+            tuto_Images[2] = Resources.Load<Sprite>("Sprites/Tut3");
+        }
     }
 }

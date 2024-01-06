@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System;
@@ -44,26 +45,6 @@ public class GameManager : MonoBehaviour
     public bool[,] check_Out; // 외부의 층마다 쓰임
     public Vector3[] place; // 좌표
 
-    #region 사운드
-    public enum soundList
-    {
-        StudentMove, ElevatorMove, Arrive, Button, ElvButton, Clear, Fail, MaxCount
-    }
-    public AudioClip[] sounds;
-    AudioSource effectSound;
-    AudioSource buttonSound;
-    public void PlaySound(AudioClip clip)
-    {
-        effectSound.clip = clip;
-        effectSound.Play();
-    }
-    public void PlaySound2(AudioClip clip)
-    {
-        buttonSound.clip = clip;
-        buttonSound.Play();
-    }
-    #endregion
-
     #region 성공,실패
     public Button retry_BTN;
     public Button next_BTN;
@@ -83,7 +64,7 @@ public class GameManager : MonoBehaviour
     }
     void StageClear() // checkGoal 수행 후 true이면 반환, stageNum을 +1, 다음 스테이지, 게임 종료 버튼 출현
     {
-        PlaySound(sounds[(int)soundList.Clear]);
+        Setting.Instance.PlaySFX(Setting.Instance.sounds[(int)Setting.soundList.Clear]);
         if (stageNum == 9)
             stageNum = 1;
         else
@@ -104,7 +85,7 @@ public class GameManager : MonoBehaviour
     }
     void StageFailed() // 제한시간 경과 시 실패, 스테이지 재시도 및 게임 종료 버튼 출현
     {
-        PlaySound(sounds[(int)soundList.Fail]);
+        Setting.Instance.PlaySFX(Setting.Instance.sounds[(int)Setting.soundList.Fail]);
         UIManager.Instance.disableElv();
         foreach (Tuple<GameObject, Student> student in this.students)
             Destroy(student.Item1);
@@ -210,7 +191,7 @@ public class GameManager : MonoBehaviour
                 student.Item1.SetActive(true);
         }
         yield return new WaitForSeconds(0.5f);
-        PlaySound(sounds[(int)soundList.Arrive]);
+        Setting.Instance.PlaySFX(Setting.Instance.sounds[(int)Setting.soundList.Arrive]);
         ActiveStudents(f);
         ChangeBack(f);
         DoorOpen();
@@ -241,7 +222,7 @@ public class GameManager : MonoBehaviour
                 student.Item1.SetActive(true);
         }
         yield return new WaitForSeconds(0.5f);
-        PlaySound(sounds[(int)soundList.Arrive]);
+        Setting.Instance.PlaySFX(Setting.Instance.sounds[(int)Setting.soundList.Arrive]);
         ActiveStudents(f);
         ChangeBack(f);
         DoorOpen();
@@ -364,15 +345,6 @@ public class GameManager : MonoBehaviour
         for (int i = 4; i < 8; i++)
         {
             arrowMotion[i] = Resources.Load<Sprite>($"Sprites/Pannel_Images/Pannel_Down_{i-4}");
-        }
-
-        effectSound = gameObject.AddComponent<AudioSource>();
-        buttonSound = gameObject.AddComponent<AudioSource>();
-        sounds = new AudioClip[(int)soundList.MaxCount];
-        for (int i = 0; i < (int)soundList.MaxCount; i++)
-        {
-            soundList soundName = (soundList)i;
-            sounds[i] = Resources.Load<AudioClip>($"Sound/{soundName.ToString()}");
         }
 
         check_Place = new bool[(int)placing.MaxCount]; // 학생의 처음 생성 위치 및 엘리베이터 위치에 학생이 있는지 여부

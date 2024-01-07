@@ -12,6 +12,8 @@ public class Setting : MonoBehaviour
     public static Setting Instance {  get { return _Instance; } }
     private void Awake()
     {
+        //if(SceneManager.GetActiveScene().buildIndex == 0)
+        //    DontDestroyOnLoad(bgmPlayer);
         if (_Instance == null)
         {
             _Instance = this;
@@ -22,6 +24,7 @@ public class Setting : MonoBehaviour
     public GameObject setting; // 세팅창 자체
     public Button set_BTN; // 세팅창 여는 버튼
 
+    #region 설정창 열기, 닫기
     public void OpenSetting()
     {
         PlaySFX(sounds[(int)soundList.Button]);
@@ -41,15 +44,20 @@ public class Setting : MonoBehaviour
         PlaySFX(sounds[(int)soundList.Button]);
         PlayerPrefs.SetFloat("savedSFX", sfxSlider.value);
         PlayerPrefs.Save();
+        PlayerPrefs.SetFloat("savedBGM", bgmSlider.value);
+        PlayerPrefs.Save();
         setting.SetActive(false);
         set_BTN.interactable = true;
         UIManager.Instance.enableElv();
         Student.isOnSetting = false;
+        Student.isElvMoving = false;
     }
     public void CloseSettingAtStart()
     {
         PlaySFX(sounds[(int)soundList.Button]);
         PlayerPrefs.SetFloat("savedSFX", sfxSlider.value);
+        PlayerPrefs.Save();
+        PlayerPrefs.SetFloat("savedBGM", bgmSlider.value);
         PlayerPrefs.Save();
         setting.SetActive(false);
         set_BTN.interactable = true;
@@ -80,10 +88,13 @@ public class Setting : MonoBehaviour
         Application.Quit(); // 어플리케이션 종료
 #endif
     }
+    #endregion
 
     #region 사운드
     public AudioSource sfxSound; // 게임내의 모든 버튼을 눌렀을 때 나오는 사운드
-    //[SerializeField] AudioSource sfxSound2;
+    public AudioSource sfxSound2; // 엘리베이터 이동, 학생들 이동 소리
+    public AudioSource bgmSound; // 배경음악
+    public GameObject bgmPlayer;
     public enum soundList
     {
         StudentMove, ElevatorMove, Arrive, Button, ElvButton, Clear, Fail, SlideHow, MaxCount
@@ -91,22 +102,36 @@ public class Setting : MonoBehaviour
     public AudioClip[] sounds;
     public AudioMixer sfxMixer;
     public Slider sfxSlider;
-    bool isSavedSXF;
+    public AudioMixer bgmMixer;
+    public Slider bgmSlider;
+    bool isSavedSFX;
+    bool isSavedBGM;
     public void PlaySFX(AudioClip clip)
     {
         sfxSound.clip = clip;
         sfxSound.Play();
     }
+    public void PlaySFX2(AudioClip clip)
+    {
+        sfxSound2.clip = clip;
+        sfxSound2.Play();
+    }
     public void PlayBGM(AudioClip clip)
     {
-
+        bgmSound.clip = clip;
+        bgmSound.Play();
     }
     public void SFXControl()
     {
         float volume = sfxSlider.value;
         if (volume == -40) sfxMixer.SetFloat("SFX", -80);
         else sfxMixer.SetFloat("SFX", volume);
-        
+    }
+    public void BGMControl()
+    {
+        float volume = bgmSlider.value;
+        if (volume == -40) bgmMixer.SetFloat("BGM", -80);
+        else bgmMixer.SetFloat("BGM", volume);
     }
     #endregion
 
@@ -164,14 +189,24 @@ public class Setting : MonoBehaviour
     #endregion
     void Start()
     {
-        isSavedSXF = PlayerPrefs.HasKey("savedSFX");
-        if (!isSavedSXF) 
+        isSavedSFX = PlayerPrefs.HasKey("savedSFX");
+        if (!isSavedSFX) 
         {
             sfxSlider.value = -20;
         }
         else
         {
             sfxSlider.value = PlayerPrefs.GetFloat("savedSFX");
+        }
+
+        isSavedBGM = PlayerPrefs.HasKey("savedBGM");
+        if (!isSavedBGM)
+        {
+            bgmSlider.value = -20;
+        }
+        else
+        {
+            bgmSlider.value = PlayerPrefs.GetFloat("savedBGM");
         }
 
         sounds = new AudioClip[(int)soundList.MaxCount];
@@ -182,9 +217,21 @@ public class Setting : MonoBehaviour
         }
         sfxSound = gameObject.AddComponent<AudioSource>();
         sfxSound.outputAudioMixerGroup = sfxMixer.FindMatchingGroups("Master")[0];
-        //sfxSound2 = gameObject.AddComponent<AudioSource>();
-        //sfxSound2.outputAudioMixerGroup = sfxMixer.FindMatchingGroups("Master")[0];
+        sfxSound2 = gameObject.AddComponent<AudioSource>();
+        sfxSound2.outputAudioMixerGroup = sfxMixer.FindMatchingGroups("Master")[0];
+        bgmSound = gameObject.AddComponent<AudioSource>();
+        bgmSound.outputAudioMixerGroup = bgmMixer.FindMatchingGroups("Master")[0];
+        bgmSound.loop = true;
+        //PlayBGM(sounds[(int)soundList.ElevatorMove]);
 
+        //if (SceneManager.GetActiveScene().buildIndex == 0)
+        //{
+        //    bgmSound = bgmPlayer.AddComponent<AudioSource>();
+        //    bgmSound.outputAudioMixerGroup = bgmMixer.FindMatchingGroups("Master")[0];
+        //    bgmSound.loop = true;
+        //    //PlayBGM(sounds[(int)soundList.ElevatorMove]);
+        //}
+            
         if(SceneManager.GetActiveScene().buildIndex == 0)
         {
             tuto_Images[0] = Resources.Load<Sprite>("Sprites/Tut1");

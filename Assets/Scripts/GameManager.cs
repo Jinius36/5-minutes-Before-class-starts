@@ -290,7 +290,7 @@ public class GameManager : MonoBehaviour
             studentComponent.top.sprite = topSprites[top];
             studentComponent.pants.sprite = pantsSprites[pants];
         }
-        avoidDuplication.Add(Tuple.Create(sex, hair,face,top,pants));
+        avoidDuplication.Add(Tuple.Create(sex, hair, face, top, pants));
 
         studentObject.SetActive(false);
         return Tuple.Create(studentObject, studentComponent);

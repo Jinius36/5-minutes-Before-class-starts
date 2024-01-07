@@ -238,6 +238,36 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1391457762
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1391457763}
+  m_Layer: 0
+  m_Name: BGMPlayer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1391457763
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1391457762}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 633.2297, y: 809.70337, z: -523.12646}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1392617381
 GameObject:
   m_ObjectHideFlags: 0
@@ -623,9 +653,13 @@ MonoBehaviour:
   set_BTN: {fileID: 1994207793271454432}
   sfxSound: {fileID: 0}
   sfxSound2: {fileID: 0}
+  bgmSound: {fileID: 0}
+  bgmPlayer: {fileID: 1391457762}
   sounds: []
   sfxMixer: {fileID: 24100000, guid: eac7232dc664f664dbaac9be91a34efc, type: 2}
   sfxSlider: {fileID: 3899290324092889132}
+  bgmMixer: {fileID: 24100000, guid: c52f0863744468548b9cfdbd6e11d9ed, type: 2}
+  bgmSlider: {fileID: 710636710771325857}
   teduri: {fileID: 3281930964579105939}
   btn_NextPage: {fileID: 6305750844416087168}
   btn_PrevPage: {fileID: 6305750843756688537}
@@ -1047,7 +1081,19 @@ MonoBehaviour:
   m_Value: -20
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1828762559}
+        m_TargetAssemblyTypeName: Setting, Assembly-CSharp
+        m_MethodName: BGMControl
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &860856322364148747
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2647,7 +2693,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: fdefdb4b4fde6ee4ea39b769790f26a7, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 49ad07e99ab671346a714c477c4056d2, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3179,7 +3225,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -80}
-  m_SizeDelta: {x: 931, y: 716}
+  m_SizeDelta: {x: 931, y: 784}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8370443499061316216
 GameObject:

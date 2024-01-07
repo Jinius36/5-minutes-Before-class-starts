@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Xml.Linq;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
@@ -121,8 +122,29 @@ public class UIManager : MonoBehaviour
     }
     #endregion
 
+    #region 스테이지 테스트 버튼
+    public GameObject testBTNs;
+    Button[] stageBTN;
+    public void testStage(int k)
+    {
+        Student.isOnSetting = false;
+        Student.isElvMoving = false;
+        GameManager.Instance.stageNum = k;
+        PlayerPrefs.SetInt("savedStage", k);
+        PlayerPrefs.Save();
+        SceneManager.LoadScene(1);
+    }
+    #endregion
+
     void Start()
     {
+        stageBTN = testBTNs.GetComponentsInChildren<Button>();
+        foreach(Button button in stageBTN)
+        {
+            int buttonIndex= System.Array.IndexOf(stageBTN, button);
+            button.onClick.AddListener(() => testStage(buttonIndex + 1));
+        }
+
         floorPannels[0] = GameObject.Find("Floor_B").GetComponent<Image>();
         floorPannels[1] = GameObject.Find("Floor").GetComponent<Image>();
         pannelTransform = floorPannels[1].GetComponent<RectTransform>();

@@ -106,6 +106,12 @@ public class Setting : MonoBehaviour
     public Slider bgmSlider;
     bool isSavedSFX;
     bool isSavedBGM;
+    public Button toggleBGM;
+    public Button toggleSFX;
+    Sprite[] toggleBGM_images = new Sprite[2];
+    Sprite[] toggleSFX_images = new Sprite[2];
+    bool onBGM;
+    bool onSFX;
     public void PlaySFX(AudioClip clip)
     {
         sfxSound.clip = clip;
@@ -132,6 +138,46 @@ public class Setting : MonoBehaviour
         float volume = bgmSlider.value;
         if (volume == -40) bgmMixer.SetFloat("BGM", -80);
         else bgmMixer.SetFloat("BGM", volume);
+    }
+    public void OnOffBGM()
+    {
+        if(onBGM)
+        {
+            bgmSound.mute = true;
+            onBGM = false;
+            toggleBGM.image.sprite = toggleBGM_images[1];
+            PlayerPrefs.SetInt("toggledBGM", 0);
+            PlayerPrefs.Save();
+        }
+        else
+        {
+            bgmSound.mute = false;
+            onBGM = true;
+            toggleBGM.image.sprite = toggleBGM_images[0];
+            PlayerPrefs.SetInt("toggledBGM", 1);
+            PlayerPrefs.Save();
+        }
+    }
+    public void OnOffSFX()
+    {
+        if(onSFX)
+        {
+            sfxSound.mute = true;
+            sfxSound2.mute = true;
+            onSFX = false;
+            toggleSFX.image.sprite= toggleSFX_images[1];
+            PlayerPrefs.SetInt("toggledSFX", 0);
+            PlayerPrefs.Save();
+        }
+        else
+        {
+            sfxSound.mute = false;
+            sfxSound2.mute = false;
+            onSFX = true;
+            toggleSFX.image.sprite = toggleSFX_images[0];
+            PlayerPrefs.SetInt("toggledSFX", 1);
+            PlayerPrefs.Save();
+        }
     }
     #endregion
 
@@ -187,6 +233,7 @@ public class Setting : MonoBehaviour
             btn_PrevPage.SetActive(false);
     }
     #endregion
+
     void Start()
     {
         isSavedSFX = PlayerPrefs.HasKey("savedSFX");
@@ -198,7 +245,6 @@ public class Setting : MonoBehaviour
         {
             sfxSlider.value = PlayerPrefs.GetFloat("savedSFX");
         }
-
         isSavedBGM = PlayerPrefs.HasKey("savedBGM");
         if (!isSavedBGM)
         {
@@ -208,6 +254,11 @@ public class Setting : MonoBehaviour
         {
             bgmSlider.value = PlayerPrefs.GetFloat("savedBGM");
         }
+
+        toggleBGM_images[0] = Resources.Load<Sprite>("Sprites/Button_Images/Button_BGM");
+        toggleBGM_images[1] = Resources.Load<Sprite>("Sprites/Button_Images/Button_BGM_off");
+        toggleSFX_images[0] = Resources.Load<Sprite>("Sprites/Button_Images/Button_SFX");
+        toggleSFX_images[1] = Resources.Load<Sprite>("Sprites/Button_Images/Button_SFX_off");
 
         sounds = new AudioClip[(int)soundList.MaxCount];
         for (int i = 0; i < (int)soundList.MaxCount; i++)
@@ -231,8 +282,33 @@ public class Setting : MonoBehaviour
         //    bgmSound.loop = true;
         //    //PlayBGM(sounds[(int)soundList.ElevatorMove]);
         //}
-            
-        if(SceneManager.GetActiveScene().buildIndex == 0)
+
+        if (PlayerPrefs.HasKey("toggledBGM"))
+        {
+            onBGM = (PlayerPrefs.GetInt("toggledBGM") == 1);
+            bgmSound.mute = onBGM ? false : true;
+            toggleBGM.image.sprite = toggleBGM_images[onBGM ? 0 : 1];
+        }
+        else
+        {
+            PlayerPrefs.SetInt("toggledBGM", 1);
+            PlayerPrefs.Save();
+        }
+
+        if (PlayerPrefs.HasKey("toggledSFX"))
+        {
+            onSFX = (PlayerPrefs.GetInt("toggledSFX") == 1);
+            sfxSound.mute = onSFX ? false : true;
+            sfxSound2.mute = onSFX ? false : true;
+            toggleSFX.image.sprite = toggleSFX_images[onSFX ? 0 : 1];
+        }
+        else
+        {
+            PlayerPrefs.SetInt("toggledSFX", 1);
+            PlayerPrefs.Save();
+        }
+
+        if (SceneManager.GetActiveScene().buildIndex == 0)
         {
             tuto_Images[0] = Resources.Load<Sprite>("Sprites/Tut1");
             tuto_Images[1] = Resources.Load<Sprite>("Sprites/Tut2");

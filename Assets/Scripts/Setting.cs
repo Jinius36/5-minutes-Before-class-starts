@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -9,7 +8,13 @@ public class Setting : MonoBehaviour
 {
     #region 싱글톤
     private static Setting _Instance;
-    public static Setting Instance {  get { return _Instance; } }
+    public static Setting Instance 
+    {  
+        get 
+        { 
+            return _Instance; 
+        } 
+    }
     private void Awake()
     {
         //if(SceneManager.GetActiveScene().buildIndex == 0)
@@ -19,9 +24,10 @@ public class Setting : MonoBehaviour
             _Instance = this;
         }
     }
+    Setting() { }
     #endregion
 
-    public GameObject setting; // 세팅창 자체
+    public GameObject setting; // 세팅창 자체 
     public Button set_BTN; // 세팅창 여는 버튼
 
     #region 설정창 열기, 닫기
@@ -42,10 +48,6 @@ public class Setting : MonoBehaviour
     public void CloseSetting()
     {
         PlaySFX(sounds[(int)soundList.Button]);
-        PlayerPrefs.SetFloat("savedSFX", sfxSlider.value);
-        PlayerPrefs.Save();
-        PlayerPrefs.SetFloat("savedBGM", bgmSlider.value);
-        PlayerPrefs.Save();
         setting.SetActive(false);
         set_BTN.interactable = true;
         UIManager.Instance.enableElv();
@@ -55,10 +57,6 @@ public class Setting : MonoBehaviour
     public void CloseSettingAtStart()
     {
         PlaySFX(sounds[(int)soundList.Button]);
-        PlayerPrefs.SetFloat("savedSFX", sfxSlider.value);
-        PlayerPrefs.Save();
-        PlayerPrefs.SetFloat("savedBGM", bgmSlider.value);
-        PlayerPrefs.Save();
         setting.SetActive(false);
         set_BTN.interactable = true;
     }
@@ -94,77 +92,69 @@ public class Setting : MonoBehaviour
     public AudioSource sfxSound; // 게임내의 모든 버튼을 눌렀을 때 나오는 사운드
     public AudioSource sfxSound2; // 엘리베이터 이동, 학생들 이동 소리
     public AudioSource bgmSound; // 배경음악
-    public GameObject bgmPlayer;
-    public enum soundList
+    //public GameObject bgmPlayer;
+    public enum soundList // 사운드 이름들
     {
-        StudentMove, ElevatorMove, Arrive, Button, ElvButton, Clear, Fail, SlideHow, MaxCount
+        Arrive, Button, Clear, ElevatorButton, ElevatorMove, Fail, SlideHow, StudentMove, MaxCount
     }
-    public AudioClip[] sounds;
-    public AudioMixer sfxMixer;
-    public Slider sfxSlider;
-    public AudioMixer bgmMixer;
-    public Slider bgmSlider;
-    bool isSavedSFX;
-    bool isSavedBGM;
-    public Button toggleBGM;
-    public Button toggleSFX;
-    Sprite[] toggleBGM_images = new Sprite[2];
-    Sprite[] toggleSFX_images = new Sprite[2];
-    bool onBGM;
-    bool onSFX;
-    public void PlaySFX(AudioClip clip)
+    public AudioClip[] sounds; // 사운드 리스트
+    public AudioMixer sfxMixer; // 효과음 믹서
+    public Slider sfxSlider; // 효과음 조절 슬라이드
+    public AudioMixer bgmMixer; // 배경음 믹서
+    public Slider bgmSlider; // 배경음 조절 슬라이드
+    public Button toggleBGM; // 배경음 음소거 버튼
+    public Button toggleSFX; // 효과음 음소거 버튼
+    Sprite[] toggleBGM_images = new Sprite[2]; // 배경음 음소거 버튼 온오프 이미지
+    Sprite[] toggleSFX_images = new Sprite[2]; // 효과음 음소거 버튼 온오프 이미지
+    public void PlaySFX(AudioClip clip) // 효과음 재생
     {
         sfxSound.clip = clip;
         sfxSound.Play();
     }
-    public void PlaySFX2(AudioClip clip)
+    public void PlaySFX2(AudioClip clip) // 효과음 재생2
     {
         sfxSound2.clip = clip;
         sfxSound2.Play();
     }
-    public void PlayBGM(AudioClip clip)
+    public void PlayBGM(AudioClip clip) // 배경음 재생
     {
         bgmSound.clip = clip;
         bgmSound.Play();
     }
-    public void SFXControl()
+    public void SFXControl() // 효과음 슬라이드 조절
     {
         float volume = sfxSlider.value;
-        if (volume == -40) sfxMixer.SetFloat("SFX", -80);
-        else sfxMixer.SetFloat("SFX", volume);
-    }
-    public void BGMControl()
-    {
-        float volume = bgmSlider.value;
-        if (volume == -40) bgmMixer.SetFloat("BGM", -80);
-        else bgmMixer.SetFloat("BGM", volume);
-    }
-    public void OnOffBGM()
-    {
-        if(onBGM)
+        if (volume == -40)
         {
-            bgmSound.mute = true;
-            onBGM = false;
-            toggleBGM.image.sprite = toggleBGM_images[1];
-            PlayerPrefs.SetInt("toggledBGM", 0);
-            PlayerPrefs.Save();
+            sfxMixer.SetFloat("SFX", -80);
         }
         else
         {
-            bgmSound.mute = false;
-            onBGM = true;
-            toggleBGM.image.sprite = toggleBGM_images[0];
-            PlayerPrefs.SetInt("toggledBGM", 1);
-            PlayerPrefs.Save();
+            sfxMixer.SetFloat("SFX", volume);
         }
+        PlayerPrefs.SetFloat("savedSFX", sfxSlider.value);
+        PlayerPrefs.Save();
     }
-    public void OnOffSFX()
+    public void BGMControl() // 배경음 슬라이드 조절
     {
-        if(onSFX)
+        float volume = bgmSlider.value;
+        if (volume == -40)
+        {
+            bgmMixer.SetFloat("BGM", -80);
+        }
+        else
+        {
+            bgmMixer.SetFloat("BGM", volume);
+        }
+        PlayerPrefs.SetFloat("savedBGM", bgmSlider.value);
+        PlayerPrefs.Save();
+    }
+    public void OnOffSFX() // 효과음 온오프
+    {
+        if(!sfxSound.mute)
         {
             sfxSound.mute = true;
             sfxSound2.mute = true;
-            onSFX = false;
             toggleSFX.image.sprite= toggleSFX_images[1];
             PlayerPrefs.SetInt("toggledSFX", 0);
             PlayerPrefs.Save();
@@ -173,9 +163,25 @@ public class Setting : MonoBehaviour
         {
             sfxSound.mute = false;
             sfxSound2.mute = false;
-            onSFX = true;
             toggleSFX.image.sprite = toggleSFX_images[0];
             PlayerPrefs.SetInt("toggledSFX", 1);
+            PlayerPrefs.Save();
+        }
+    }
+    public void OnOffBGM() // 배경음 온오프
+    {
+        if (!bgmSound.mute)
+        {
+            bgmSound.mute = true;
+            toggleBGM.image.sprite = toggleBGM_images[1];
+            PlayerPrefs.SetInt("toggledBGM", 0);
+            PlayerPrefs.Save();
+        }
+        else
+        {
+            bgmSound.mute = false;
+            toggleBGM.image.sprite = toggleBGM_images[0];
+            PlayerPrefs.SetInt("toggledBGM", 1);
             PlayerPrefs.Save();
         }
     }
@@ -189,13 +195,13 @@ public class Setting : MonoBehaviour
     public Image tuto;
     Sprite[] tuto_Images = new Sprite[3];
     int nowPage = 0;
-    public void OpenHowToPlay() // 게임 방법 창 열기, 시작 화면 HowToPlayButton이 보유
+    public void OpenHowToPlay() // 게임 방법 창 열기
     {
+        PlaySFX(sounds[(int)soundList.Button]);
         teduri.SetActive(true);
         btn_NextPage.SetActive(true);
         btn_CloseHow.SetActive(true);
         tuto.gameObject.SetActive(true);
-        PlaySFX(sounds[(int)soundList.Button]);
     }
     public void CloseHowToPlay() // 게임 방법 창 닫기
     {
@@ -218,7 +224,9 @@ public class Setting : MonoBehaviour
             tuto.sprite = tuto_Images[nowPage];
         }
         if (nowPage == 2)
+        {
             btn_NextPage.SetActive(false);
+        }
     }
     public void PrevPage()
     {
@@ -230,14 +238,20 @@ public class Setting : MonoBehaviour
             tuto.sprite = tuto_Images[nowPage];
         }
         if (nowPage == 0)
+        {
             btn_PrevPage.SetActive(false);
+        }
     }
     #endregion
 
     void Start()
     {
-        isSavedSFX = PlayerPrefs.HasKey("savedSFX");
-        if (!isSavedSFX) 
+        sounds = Resources.LoadAll<AudioClip>("Sound"); // 사운드 불러오기
+        toggleBGM_images[0] = Resources.Load<Sprite>("Sprites/Button_Images/Button_BGM"); // 음소거 버튼 이미지 불러오기
+        toggleBGM_images[1] = Resources.Load<Sprite>("Sprites/Button_Images/Button_BGM_off");
+        toggleSFX_images[0] = Resources.Load<Sprite>("Sprites/Button_Images/Button_SFX");
+        toggleSFX_images[1] = Resources.Load<Sprite>("Sprites/Button_Images/Button_SFX_off");
+        if (!PlayerPrefs.HasKey("savedSFX")) 
         {
             sfxSlider.value = -20;
         }
@@ -245,8 +259,7 @@ public class Setting : MonoBehaviour
         {
             sfxSlider.value = PlayerPrefs.GetFloat("savedSFX");
         }
-        isSavedBGM = PlayerPrefs.HasKey("savedBGM");
-        if (!isSavedBGM)
+        if (!PlayerPrefs.HasKey("savedBGM"))
         {
             bgmSlider.value = -20;
         }
@@ -254,25 +267,30 @@ public class Setting : MonoBehaviour
         {
             bgmSlider.value = PlayerPrefs.GetFloat("savedBGM");
         }
-
-        toggleBGM_images[0] = Resources.Load<Sprite>("Sprites/Button_Images/Button_BGM");
-        toggleBGM_images[1] = Resources.Load<Sprite>("Sprites/Button_Images/Button_BGM_off");
-        toggleSFX_images[0] = Resources.Load<Sprite>("Sprites/Button_Images/Button_SFX");
-        toggleSFX_images[1] = Resources.Load<Sprite>("Sprites/Button_Images/Button_SFX_off");
-
-        sounds = new AudioClip[(int)soundList.MaxCount];
-        for (int i = 0; i < (int)soundList.MaxCount; i++)
+        if (!PlayerPrefs.HasKey("toggledBGM"))
         {
-            soundList soundName = (soundList)i;
-            sounds[i] = Resources.Load<AudioClip>($"Sound/{soundName.ToString()}");
+            PlayerPrefs.SetInt("toggledBGM", 1);
+            PlayerPrefs.Save();
         }
-        sfxSound = gameObject.AddComponent<AudioSource>();
-        sfxSound.outputAudioMixerGroup = sfxMixer.FindMatchingGroups("Master")[0];
-        sfxSound2 = gameObject.AddComponent<AudioSource>();
-        sfxSound2.outputAudioMixerGroup = sfxMixer.FindMatchingGroups("Master")[0];
-        bgmSound = gameObject.AddComponent<AudioSource>();
-        bgmSound.outputAudioMixerGroup = bgmMixer.FindMatchingGroups("Master")[0];
-        bgmSound.loop = true;
+        else
+        {
+            bool onBGM = (PlayerPrefs.GetInt("toggledBGM") == 1);
+            bgmSound.mute = onBGM ? false : true;
+            toggleBGM.image.sprite = toggleBGM_images[onBGM ? 0 : 1];
+        }
+        if (!PlayerPrefs.HasKey("toggledSFX"))
+        {
+            PlayerPrefs.SetInt("toggledSFX", 1);
+            PlayerPrefs.Save();
+        }
+        else
+        {
+            bool onSFX = (PlayerPrefs.GetInt("toggledSFX") == 1);
+            sfxSound.mute = onSFX ? false : true;
+            sfxSound2.mute = onSFX ? false : true;
+            toggleSFX.image.sprite = toggleSFX_images[onSFX ? 0 : 1];
+        }
+
         //PlayBGM(sounds[(int)soundList.ElevatorMove]);
 
         //if (SceneManager.GetActiveScene().buildIndex == 0)
@@ -282,31 +300,6 @@ public class Setting : MonoBehaviour
         //    bgmSound.loop = true;
         //    //PlayBGM(sounds[(int)soundList.ElevatorMove]);
         //}
-
-        if (PlayerPrefs.HasKey("toggledBGM"))
-        {
-            onBGM = (PlayerPrefs.GetInt("toggledBGM") == 1);
-            bgmSound.mute = onBGM ? false : true;
-            toggleBGM.image.sprite = toggleBGM_images[onBGM ? 0 : 1];
-        }
-        else
-        {
-            PlayerPrefs.SetInt("toggledBGM", 1);
-            PlayerPrefs.Save();
-        }
-
-        if (PlayerPrefs.HasKey("toggledSFX"))
-        {
-            onSFX = (PlayerPrefs.GetInt("toggledSFX") == 1);
-            sfxSound.mute = onSFX ? false : true;
-            sfxSound2.mute = onSFX ? false : true;
-            toggleSFX.image.sprite = toggleSFX_images[onSFX ? 0 : 1];
-        }
-        else
-        {
-            PlayerPrefs.SetInt("toggledSFX", 1);
-            PlayerPrefs.Save();
-        }
 
         if (SceneManager.GetActiveScene().buildIndex == 0)
         {

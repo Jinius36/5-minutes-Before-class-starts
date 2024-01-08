@@ -2,9 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Audio;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 using System;
 using DG.Tweening;
 using Rand = UnityEngine.Random;
@@ -12,13 +10,7 @@ using Rand = UnityEngine.Random;
 public class GameManager : MonoBehaviour
 {
     #region 싱글톤
-    static GameManager _Instance;
-    GameManager() { }
-    private void Awake()
-    {
-        if (_Instance == null)
-            _Instance = this;
-    }
+    private static GameManager _Instance;
     public static GameManager Instance
     {
         get
@@ -26,6 +18,14 @@ public class GameManager : MonoBehaviour
             return _Instance;
         }
     }
+    private void Awake()
+    {
+        if (_Instance == null)
+        {
+            _Instance = this;
+        }
+    }
+    GameManager() { }
     #endregion
 
     public int stageNum; // 플레이어가 현재 도전해야 하는 스테이지
@@ -34,88 +34,85 @@ public class GameManager : MonoBehaviour
     public int goal = 0; // 스테이지 목표 인원
     public int attend = 0; // 해당 스테이지에서 목표층에 도달한 인원
     public int floor = 0; // 현재 층
-    bool isSave; // 저장된 진행 상황이 있는지 확인
-    GameObject stage; // 현재 스테이지
-
-    public enum placing // 위치 좌표 설정을 위한것들
-    {
-        left, mid, right, leftUp, midUp, rightUp, leftDown, midDown, rightDown, MaxCount
-    }
-    public bool[] check_Place; // 엘리베이터 내부에 쓰임
-    public bool[,] check_Out; // 외부의 층마다 쓰임
-    public Vector3[] place; // 좌표
+    public bool[] check_Place; // 엘리베이터 내부의 총 여섯 자리마다 학생이 위치하는지 확인
+    public bool[,] check_Out; // 각 층마다 엘리베이터 외부 위치에 학생이 있는지 여부
+    public Vector3[] place; // 총 9개 자리의 좌표들
 
     #region 성공,실패
-    public Button retry_BTN;
-    public Button next_BTN;
-    public Button exit_BTN_Clear;
-    public Button exit_BTN_Failed;
-    public GameObject clearScreen;
-    public GameObject failedScreen;
-    public TextMeshProUGUI clearText;
-    public TextMeshProUGUI failedText;
-    public bool checkGoal() // 목표 인원에 도달했으면 true
-    {
-        return goal == attend;
-    }
-    public void CallClear()
-    {
-        StageClear();
-    }
-    void StageClear() // checkGoal 수행 후 true이면 반환, stageNum을 +1, 다음 스테이지, 게임 종료 버튼 출현
+    public GameObject clearScreen; // 성공 창
+    public GameObject failedScreen; // 실패 창
+    public TextMeshProUGUI clearText; // 성공 창 텍스트
+    public TextMeshProUGUI failedText; // 실패 창 텍스트
+    public void StageClear() // 제한시간 안에 모든 학생이 도착하면 성공, stageNum++
     {
         Setting.Instance.PlaySFX(Setting.Instance.sounds[(int)Setting.soundList.Clear]);
         if (stageNum == 9)
+        {
             stageNum = 1;
+        }
         else
+        {
             stageNum++;
+        }
         PlayerPrefs.SetInt("savedStage", stageNum);
         PlayerPrefs.Save();
         UIManager.Instance.disableElv();
         foreach (Tuple<GameObject, Student> student in this.students)
+        {
             Destroy(student.Item1);
+        }
         clearScreen.SetActive(true);
-        next_BTN.gameObject.SetActive(true);
-        exit_BTN_Clear.gameObject.SetActive(true);
         clearText.text = $"목표: {goal}\n달성: {attend}";
     }
-    public void CallFailed()
-    {
-        StageFailed();
-    }
-    void StageFailed() // 제한시간 경과 시 실패, 스테이지 재시도 및 게임 종료 버튼 출현
+    public void StageFailed() // 엘리베이트가 지정한 층에 도착했을 때 제한시간 경과했다면 실패
     {
         Setting.Instance.PlaySFX(Setting.Instance.sounds[(int)Setting.soundList.Fail]);
         UIManager.Instance.disableElv();
         foreach (Tuple<GameObject, Student> student in this.students)
-            Destroy(student.Item1);
+        { 
+            Destroy(student.Item1); 
+        }
         failedScreen.SetActive(true);
-        retry_BTN.gameObject.SetActive(true);
-        exit_BTN_Failed.gameObject.SetActive(true);
         failedText.text = $"목표: {goal}\n달성: {attend}";
     }
     #endregion
 
     #region 엘리베이터
-    GameObject door_Left; // 엘리베이터 문
-    GameObject door_Right;
-    SpriteRenderer background; // 배경
-    Sprite[] backgrounds;
-    Image arrow;
-    Sprite[] arrowMotion = new Sprite[8];
-    int arrowNum = 1;
-    int eSpeed = 1;
-    public void DoorClose()
+    public GameObject door_Left; // 엘리베이터 문
+    public GameObject door_Right;
+    public SpriteRenderer background; // 외부배경
+    Sprite[] backgrounds; // 외부배경 이미지들
+    public Image arrow; // 엘리베이터 이동 화살표
+    Sprite[] arrowMotion; // 엘리베이터 이동 화살표 이미지들
+    int arrowNum; // 엘리베이터 이동 화살표 이미지 인덱스
+    int eSpeed = 1; // 엘리베이터가 한 층 이동할 때 마다 경과하는 시간
+    public void DoorClose() // 문 열기
     {
         door_Left.transform.DOMoveX(-0.458f, 0.5f);
         door_Right.transform.DOMoveX(1.297f, 0.5f);
     }
-    public void DoorOpen()
+    public void DoorOpen() // 문 닫기
     {
         door_Left.transform.DOMoveX(-2.278f, 0.5f);
         door_Right.transform.DOMoveX(3.13f, 0.5f);
     }
-    IEnumerator ArrowUping(int f)
+    IEnumerator ArrowUping(int f) // 위쪽 화살표 모션
+    {
+        arrowNum = 4;
+        arrow.gameObject.SetActive(true);
+        arrow.sprite = arrowMotion[4];
+        while (floor != f)
+        {
+            arrowNum++;
+            if (arrowNum > 7)
+            {
+                arrowNum = 4;
+            }
+            yield return StartCoroutine(ArrowUpDown());
+        }
+        arrow.gameObject.SetActive(false);
+    }
+    IEnumerator ArrowDowning(int f) // 아래쪽 화살표 모션
     {
         arrowNum = 0;
         arrow.gameObject.SetActive(true);
@@ -124,128 +121,107 @@ public class GameManager : MonoBehaviour
         {
             arrowNum++;
             if (arrowNum > 3)
+            {
                 arrowNum = 0;
-            yield return StartCoroutine(ArrowUp());
+            }
+            yield return StartCoroutine(ArrowUpDown());
         }
-        arrowNum = 0;
         arrow.gameObject.SetActive(false);
     }
-    IEnumerator ArrowUp()
+    IEnumerator ArrowUpDown() // 화살표 모션 중 이미지 바꾸기
     {
         yield return new WaitForSeconds(0.3f);
         arrow.sprite = arrowMotion[arrowNum];
     }
-    IEnumerator ArrowDowning(int f)
-    {
-        arrowNum = 0;
-        arrow.gameObject.SetActive(true);
-        arrow.sprite = arrowMotion[4];
-        while (floor != f)
-        {
-            arrowNum++;
-            if (arrowNum > 3)
-                arrowNum = 0;
-            yield return StartCoroutine(ArrowDown());
-        }
-        arrowNum = 0;
-        arrow.gameObject.SetActive(false);
-    }
-    IEnumerator ArrowDown()
-    {
-        yield return new WaitForSeconds(0.3f);
-        arrow.sprite = arrowMotion[arrowNum + 4];
-    }
-    IEnumerator UpFloor()
+    IEnumerator ChangeFloor(int i) // 층 이동, i가 1이면 위로, -1이면 아래로
     {
         yield return new WaitForSeconds(0.5f);
-        floor++;
+        floor += i;
         UIManager.Instance.changeFloor();
         UIManager.Instance.addStageTime(eSpeed);
     }
-    IEnumerator DownFloor()
-    {
-        yield return new WaitForSeconds(0.5f);
-        floor--;
-        UIManager.Instance.changeFloor();
-        UIManager.Instance.addStageTime(eSpeed);
-    }
-    public IEnumerator UpElevator(int f)
+    public IEnumerator UpElevator(int f) // 지정한 층까지 위로 이동
     {
         Student.isElvMoving = true;
         DoorClose();
-        yield return new WaitForSeconds(eSpeed);
+        yield return new WaitForSeconds(1);
         //PlaySound(sounds[(int)soundList.ElevatorMove]);
-        foreach (Tuple<GameObject, Student> student in students)
+        foreach (Tuple<GameObject, Student> student in students) // 엘리베이터에 탑승한 학생들 제외하고 비활성화
         {
             if (student.Item2.nowFloor != -1)
+            {
                 student.Item1.SetActive(false);
+            }
         }
         StartCoroutine(ArrowUping(f));
         for (int i = floor; i < f; i++)
         {
-            yield return StartCoroutine(UpFloor());
+            yield return StartCoroutine(ChangeFloor(1));
         }
-        foreach (Tuple<GameObject, Student> student in students)
+        foreach (Tuple<GameObject, Student> student in students) // 지정 층 도착 시 해당 층에 있는 학생들만 활성화
         {
             if (student.Item2.nowFloor == floor)
+            {
                 student.Item1.SetActive(true);
+            }
         }
         yield return new WaitForSeconds(0.5f);
         Setting.Instance.PlaySFX(Setting.Instance.sounds[(int)Setting.soundList.Arrive]);
-        ActiveStudents(f);
-        ChangeBack(f);
+        background.sprite = backgrounds[f];
         DoorOpen();
         UIManager.Instance.enableElv(f);
         Student.isElvMoving = false;
         if (stageTime >= limitTime)
-            CallFailed();
+        {
+            StageFailed();
+        }
     }
-    public IEnumerator DownElevator(int f)
+    public IEnumerator DownElevator(int f) // 지정한 층까지 아래로 이동
     {
         Student.isElvMoving = true;
         DoorClose();
-        yield return new WaitForSeconds(eSpeed);
+        yield return new WaitForSeconds(1);
         //PlaySound(sounds[(int)soundList.ElevatorMove]);
         foreach (Tuple<GameObject, Student> student in students)
         {
             if (student.Item2.nowFloor != -1)
+            {
                 student.Item1.SetActive(false);
+            }
         }
         StartCoroutine(ArrowDowning(f));
         for (int i = floor; i > f; i--)
-        { 
-            yield return StartCoroutine(DownFloor());
+        {
+            yield return StartCoroutine(ChangeFloor(-1));
         }
         foreach (Tuple<GameObject, Student> student in students)
         {
             if (student.Item2.nowFloor == floor)
+            {
                 student.Item1.SetActive(true);
+            }
         }
         yield return new WaitForSeconds(0.5f);
         Setting.Instance.PlaySFX(Setting.Instance.sounds[(int)Setting.soundList.Arrive]);
-        ActiveStudents(f);
-        ChangeBack(f);
+        background.sprite = backgrounds[f];
         DoorOpen();
         UIManager.Instance.enableElv(f);
         Student.isElvMoving = false;
         if (stageTime >= limitTime)
-            CallFailed();
-    }
-    void ChangeBack(int f)
-    {
-        background.sprite = backgrounds[f];
+        {
+            StageFailed();
+        }
     }
     #endregion
 
     #region 학생 관리
     public List<Tuple<GameObject, Student>> students = new List<Tuple<GameObject, Student>>(); // 개별 학생 스폰, 관리용
-    Sprite[] maleHairSprites;
-    Sprite[] femaleHairSprites;
-    Sprite[] backHairSprites;
-    Sprite[] faceSprites;
-    Sprite[] topSprites;
-    Sprite[] pantsSprites;
-    List<Tuple<int, int, int, int, int>> avoidDuplication = new List<Tuple<int, int, int, int, int>>();
+    Sprite[] hairSprites; // 머리 이미지들
+    Sprite[] backHairSprites; // 여자 머리 0~2번 뒷머리 이미지들
+    Sprite[] faceSprites; // 얼굴 이미지들
+    Sprite[] topSprites; // 상의 이미지들
+    Sprite[] pantsSprites; // 하의 이미지들
+    List<Tuple<int, int, int, int, int>> avoidDuplication = new List<Tuple<int, int, int, int, int>>(); // 중복 방지 조합 리스트
     public Tuple<GameObject, Student> Spawn(int sex, int spawnFloor, int goalFloor, int orderPlace) // 학생 소환
     {
         GameObject studentObject = Instantiate(Resources.Load<GameObject>("Student"));
@@ -255,7 +231,6 @@ public class GameManager : MonoBehaviour
         studentComponent.goalFloor = goalFloor;
         studentComponent.orderPlace = orderPlace;
         studentObject.transform.position = place[orderPlace];
-
         int hair, face, top, pants;
         do
         {
@@ -273,59 +248,54 @@ public class GameManager : MonoBehaviour
                 top = Rand.Range(0, 8);
                 pants = Rand.Range(0, 6);
             }
-        } while (avoidDuplication.Contains(Tuple.Create(sex, hair, face, top, pants)));
+        } 
+        while (avoidDuplication.Contains(Tuple.Create(sex, hair, face, top, pants)));
         if (sex == 0)
         {
-            studentComponent.hair.sprite = maleHairSprites[hair];
+            studentComponent.hair.sprite = hairSprites[hair + 6];
             studentComponent.face.sprite = faceSprites[face];
             studentComponent.top.sprite = topSprites[top];
             studentComponent.pants.sprite = pantsSprites[pants];
         }
         else
         {
-            studentComponent.hair.sprite = femaleHairSprites[hair];
+            studentComponent.hair.sprite = hairSprites[hair];
             if (hair < 3)
+            {
                 studentComponent.hairBack.sprite = backHairSprites[hair];
+            }
             studentComponent.face.sprite = faceSprites[face];
             studentComponent.top.sprite = topSprites[top];
             studentComponent.pants.sprite = pantsSprites[pants];
         }
         avoidDuplication.Add(Tuple.Create(sex, hair, face, top, pants));
-
         studentObject.SetActive(false);
         return Tuple.Create(studentObject, studentComponent);
-    }
-    void ActiveStudents(int f) // 학생 활성화, 엘리베이터가 층 이동을 완료하면 실행
-    {
-        foreach (Tuple<GameObject, Student> student in students)
-        {
-            if (student.Item2.nowFloor == f)
-                student.Item1.SetActive(true);
-        }
     }
     #endregion
 
     #region 느낌표 관리
-    GameObject[] existenceMarks;
+    public GameObject[] existenceMarks; // 학생이 존재하는 층에 나타나는 느낌표
     public void checkExistenceAll() // 전체 층 대상으로 학생 유무 판단하여 느낌표 활성화
     {
         for (int i = 0; i < 11; i++)
         {
-            if (check_Out[i, 0] || check_Out[i, 1] || check_Out[i, 2])
+            if (check_Out[i, 0] || check_Out[i, 1] || check_Out[i, 2]) // 한명이라도 존재 시 활성화
+            {
                 existenceMarks[i].SetActive(true);
+            }
         }
     }
-    public void checkExistence(int f) // 단일 층 대상 버전
+    public void checkExistence(int f) // 어떤 층에서 학생을 엘리베이터로 배치했을 때, 해당 층에 학생이 더 남아있는지 확인
     {
-        if (!check_Out[f, 0] && !check_Out[f, 1] && !check_Out[f, 2])
+        if (!check_Out[f, 0] && !check_Out[f, 1] && !check_Out[f, 2]) // 남아있는 학생이 없을 시 비활성화
             existenceMarks[f].SetActive(false);
     }
     #endregion
 
     void Start()
     {
-        isSave = PlayerPrefs.HasKey("savedStage"); // 스테이지 프리팹
-        if (!isSave)
+        if (!PlayerPrefs.HasKey("savedStage")) // 스테이지 진행 상황 프리팹
         {
             stageNum = 1;
             Debug.Log($"현재 스테이지: {stageNum}");
@@ -336,25 +306,10 @@ public class GameManager : MonoBehaviour
             Debug.Log($"현재 스테이지: {stageNum}");
         }
 
-        arrow = GameObject.Find("Arrow").GetComponent<Image>();
-        arrow.gameObject.SetActive(false);
-        for( int i = 0; i < 4; i++)
-        {
-            arrowMotion[i] = Resources.Load<Sprite>($"Sprites/Pannel_Images/Pannel_Up_{i}");
-        }
-        for (int i = 4; i < 8; i++)
-        {
-            arrowMotion[i] = Resources.Load<Sprite>($"Sprites/Pannel_Images/Pannel_Down_{i-4}");
-        }
-
-        check_Place = new bool[(int)placing.MaxCount]; // 학생의 처음 생성 위치 및 엘리베이터 위치에 학생이 있는지 여부
-        check_Out = new bool[11,3];                    // 엘리베이터 외부 위치에 학생이 있는지 여부
-        place = new Vector3[(int)placing.MaxCount];    // 좌표 설정
-
-        door_Left = GameObject.Find("Door_Left"); // 엘리베이터 문 설정
-        door_Right = GameObject.Find("Door_Right");
-
-        for (int i = 0; i < (int)placing.MaxCount; i++) // false로 초기화
+        check_Place = new bool[9];
+        check_Out = new bool[11,3];
+        place = new Vector3[9];
+        for (int i = 0; i < 9; i++) // false로 초기화
         {
             check_Place[i] = false;
         }
@@ -365,8 +320,7 @@ public class GameManager : MonoBehaviour
                 check_Out[i, j] = false;
             }
         }
-
-        for (int i = 0; i < (int)placing.MaxCount; i++) // 좌표 설정
+        for (int i = 0; i < 9; i++) // 좌표 설정
         {
             int index = i;
             float x = (index % 3) * 1.15f;
@@ -374,28 +328,14 @@ public class GameManager : MonoBehaviour
             place[i] = new Vector3(-0.75f + x, 1.5f - y, 10);
         }
 
-        existenceMarks = new GameObject[11]; // 층의 학생 존재 유무 느낌표, 비활성으로 초기화
-        for (int i = 0; i < 11; i++)
-        {
-            existenceMarks[i] = GameObject.Find($"Mark_{i}");
-            existenceMarks[i].SetActive(false);
-        }
-
-        background=GameObject.Find("Background").GetComponent<SpriteRenderer>();
-        backgrounds=new Sprite[11];
-        for (int i = 0;i < 11; i++)
-        {
-            backgrounds[i] = Resources.Load<Sprite>($"Sprites/Background_Images/Back{i}");
-        }
-
-        maleHairSprites = Resources.LoadAll<Sprite>("Sprites/Human/Male_Hair");
-        femaleHairSprites = Resources.LoadAll<Sprite>("Sprites/Human/Female_Hair");
+        arrowMotion = Resources.LoadAll<Sprite>("Sprites/Arrow_Pannel"); // 엘리베이터 이동 화살표 이미지 불러오기
+        backgrounds = Resources.LoadAll<Sprite>("Sprites/Background_Images"); // 외부배경 이미지 불러오기
+        hairSprites = Resources.LoadAll<Sprite>("Sprites/Human/Hair"); // 학생 착장 이미지 불러오기
         backHairSprites = Resources.LoadAll<Sprite>("Sprites/Human/Female_Hair_Back");
         faceSprites = Resources.LoadAll<Sprite>("Sprites/Human/Face");
         topSprites = Resources.LoadAll<Sprite>("Sprites/Human/Top");
         pantsSprites = Resources.LoadAll<Sprite>("Sprites/Human/Pants");
 
-        stage = Resources.Load<GameObject>($"Stage"); // 스테이지 불러오기
-        Instantiate(stage);
+        Instantiate(Resources.Load<GameObject>($"Stage")); // 스테이지 불러오기
     }
 }

@@ -1,10 +1,5 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
-using UnityEditorInternal;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class Student : MonoBehaviour
 {
@@ -17,17 +12,17 @@ public class Student : MonoBehaviour
     public SpriteRenderer face;
     public SpriteRenderer top;
     public SpriteRenderer pants;
-    Canvas bubble;
-    TextMeshProUGUI goalText;
+    public Canvas bubble;
+    public TextMeshProUGUI goalText;
 
     #region 드래그 앤 드롭
     Vector3 mousepoz;
-    SpriteRenderer[] draglayer;
+    public SpriteRenderer[] draglayer; // 드래그 중인 학생이 먼저 보이게 하는 레이어 설정용
     bool isDragging = false;
     bool isAtOutside = true;
-    public static bool isOnSetting = false;
-    public static bool isElvMoving = false;
-    private void ResetPlace()
+    public static bool isOnSetting = false; // 설정창이 켜져있는지 여부
+    public static bool isElvMoving = false; // 엘리베이터가 이동 중인지 여부
+    private void ResetPlace() // 조건에 안맞을 경우 학생을 원위치 시키는 함수
     {
         transform.position = GameManager.Instance.place[orderPlace];
     }
@@ -41,7 +36,7 @@ public class Student : MonoBehaviour
     }
     private void OnMouseDrag()
     {
-        for(int i=0; i<5; i++)
+        for(int i=0; i<5; i++) // 드래그 중인 학생이 다른 학생보다 먼저 보이게 각 레이어 조정
         {
             switch(i)
             {
@@ -60,7 +55,6 @@ public class Student : MonoBehaviour
                 case 4:
                     draglayer[i].sortingLayerName = "DragTop";
                     break;
-                default: break;
             }
         }
         bubble.sortingOrder = -1;
@@ -72,7 +66,7 @@ public class Student : MonoBehaviour
     }
     private void OnMouseUp()
     {
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 5; i++) // 각 레이어 원래대로 조정
         {
             switch (i)
             {
@@ -91,21 +85,22 @@ public class Student : MonoBehaviour
                 case 4:
                     draglayer[i].sortingLayerName = "Top";
                     break;
-                default: break;
             }
         }
         bubble.sortingOrder = -2;
         isDragging = false;
-        int p = 0;
+        int p = 0; // 자리 배열 인덱스
         if (transform.position.x <= -1.0f || transform.position.x >= 1.8f 
             || transform.position.y >= 3.0f || transform.position.y <= -5.0f) // 너무 벗어났다면 원위치
         {
-            if(orderPlace>2)
+            if (orderPlace > 2) // 엘리베이터에 있던 학생인 경우 드롭 시 말풍선 비활성화
+            {
                 bubble.gameObject.SetActive(false);
+            }
             ResetPlace();
             return;
         }
-        else
+        else // x 좌표 설정
         {
             switch (transform.position.x)
             {
@@ -129,8 +124,10 @@ public class Student : MonoBehaviour
                 //GameManager.Instance.PlaySound(GameManager.Instance.sounds[(int)GameManager.soundList.StudentMove]);
                 GameManager.Instance.check_Place[orderPlace] = false;
                 UIManager.Instance.addAttend();
-                if(GameManager.Instance.checkGoal())
-                    GameManager.Instance.CallClear();
+                if (GameManager.Instance.goal == GameManager.Instance.attend)
+                {
+                    GameManager.Instance.StageClear();
+                }
                 Destroy(gameObject);
             }
             //if (!GameManager.Instance.check_Out[nowFloor,p]) // 내린 층이 원하는 층이 아니고 그 층 중에 빈 자리에 배치함
@@ -148,38 +145,46 @@ public class Student : MonoBehaviour
             {
                 ResetPlace();
                 if (!isOnSetting && orderPlace > 2)
+                {
                     bubble.gameObject.SetActive(false);
+                }
                 return;
             }
         }
         else // 엘리베이터에 놨다면
         {
-            if(transform.position.y > -2.65f)
+            if (transform.position.y > -2.65f) // 윗 줄
+            {
                 p += 3;
-            else
+            }
+            else // 아랫 줄
+            {
                 p += 6;
+            }
             if (!GameManager.Instance.check_Place[p])
             {
                 //GameManager.Instance.PlaySound(GameManager.Instance.sounds[(int)GameManager.soundList.StudentMove]);
                 transform.position = GameManager.Instance.place[p];
                 if (orderPlace > 2) // 엘리베이터에서 엘리베이터로 배치한 경우
-                    GameManager.Instance.check_Place[orderPlace] = false;
+                {
+                    GameManager.Instance.check_Place[orderPlace] = false; // 원래 있던 자리를 비웠다고 명시
+                }
                 else // 밖에서 엘리베이터에 배치한 경우
                 {
-                    GameManager.Instance.check_Out[nowFloor, orderPlace] = false;
-                    GameManager.Instance.checkExistence(nowFloor);
+                    GameManager.Instance.check_Out[nowFloor, orderPlace] = false; // 원래 있던 자리를 비웠다고 명시 (외부)
+                    GameManager.Instance.checkExistence(nowFloor); // 해당 층에 학생이 남아있는 지 확인 후 느낌표 유지 혹은 비활성화
                 }
-                orderPlace = p;
-                GameManager.Instance.check_Place[p] = true;
-                nowFloor = -1;
+                orderPlace = p; // 옮긴 자리로 조정
+                GameManager.Instance.check_Place[p] = true; // 옮긴 자리를 차지하였다고 명시
+                nowFloor = -1; // 엘리베이터에 탑승한 상태
                 if (!isOnSetting)
+                {
                     bubble.gameObject.SetActive(false);
+                }
             }
             else
             {
                 ResetPlace();
-                if (!isOnSetting)
-                    bubble.gameObject.SetActive(false);
                 return;
             }
         }
@@ -196,21 +201,17 @@ public class Student : MonoBehaviour
 
     void Start()
     {
-        int i = 0;
-        draglayer = new SpriteRenderer[6];
-        foreach(Transform child in this.transform)
+        switch (goalFloor)
         {
-            if(child.GetComponent<SpriteRenderer>() != null)
-                draglayer[i] = child.GetComponent<SpriteRenderer>();
-            i++;
+            case 0:
+                goalText.text = "B2";
+                break;
+            case 1:
+                goalText.text = "L";
+                break;
+            default:
+                goalText.text = $"{goalFloor - 1}";
+                break;
         }
-        bubble = GetComponentInChildren<Canvas>();
-        goalText = bubble.GetComponentInChildren<TextMeshProUGUI>();
-        if (goalFloor == 0)
-            goalText.text = "B2";
-        if (goalFloor == 1)
-            goalText.text = "L";
-        if (goalFloor >= 2)
-            goalText.text = $"{goalFloor - 1}";
     }
 }

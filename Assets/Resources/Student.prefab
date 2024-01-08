@@ -149,6 +149,14 @@ MonoBehaviour:
   face: {fileID: 8428045404095656762}
   top: {fileID: 8428045405067179241}
   pants: {fileID: 8428045405332668913}
+  bubble: {fileID: 7188889589430559451}
+  goalText: {fileID: 2065790785460006353}
+  draglayer:
+  - {fileID: 8428045403688450356}
+  - {fileID: 8428045404095656762}
+  - {fileID: 8428045405158195726}
+  - {fileID: 8428045405332668913}
+  - {fileID: 8428045405067179241}
 --- !u!1 &2309673575895623207
 GameObject:
   m_ObjectHideFlags: 0
@@ -161,7 +169,7 @@ GameObject:
   - component: {fileID: 3235467147768465375}
   - component: {fileID: 2065790785460006353}
   m_Layer: 5
-  m_Name: FloorPopUp
+  m_Name: GoalFloorText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -396,7 +404,7 @@ GameObject:
   - component: {fileID: 1662689606782863104}
   - component: {fileID: 5976438630878208376}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Bubble
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

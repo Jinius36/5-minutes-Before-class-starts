@@ -185,6 +185,10 @@ public class Student : MonoBehaviour
             else
             {
                 ResetPlace();
+                if (!isOnSetting)
+                {
+                    bubble.gameObject.SetActive(false);
+                }
                 return;
             }
         }

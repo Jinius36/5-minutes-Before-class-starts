@@ -37,20 +37,20 @@ public class UIManager : MonoBehaviour
     int hour = 0;
     int minute = 0;
     public Image[] floorPannels = new Image[2]; // 현재 층 표시 패널 [0]은 지하 2층의 B
-    public RectTransform pannelTransform; // 지하 2층과 그 외 다른 층에서의 숫자 패널 위치 조정용
+    public Transform pannelTransform;  // 지하 2층과 그 외 다른 층에서의 숫자 패널 위치 조정용
     Sprite[] numberPannels; // L 포함 숫자 패널 이미지들
     public void changeFloor() // 현재 층 표시 변경
     {
         if (GameManager.Instance.floor == 0) // 지하 2층인 경우
         {
             floorPannels[0].enabled = true; // 'B' 패널 활성화
-            pannelTransform.anchoredPosition = new Vector3(189, 1165, 0); // 숫자 패널 오른쪽으로
+            pannelTransform.position = new Vector3(0.5812092f, 3.640626f, 0); // 숫자 패널 오른쪽으로
             floorPannels[1].sprite = numberPannels[2];
         }
         else
         {
             floorPannels[0].enabled = false; // 'B' 패널 비활성화
-            pannelTransform.anchoredPosition = new Vector3(134, 1165, 0); // 숫자 패널 왼쪽으로
+            pannelTransform.position = new Vector3(0.42f, 3.640626f, 0); // 숫자 패널 왼쪽으로
             floorPannels[1].sprite = numberPannels[GameManager.Instance.floor - 1];
         }
     }
@@ -69,11 +69,11 @@ public class UIManager : MonoBehaviour
     public void addAttend() // 달성 인원 추가, 표시 변경
     {
         GameManager.Instance.attend++;
-        textUIs[(int)textUI.Attend].text = $"   달성 : {GameManager.Instance.attend}";
+        textUIs[(int)textUI.Attend].text = $"달성 : {GameManager.Instance.attend}";
     }
     public void SetGoalUI()
     {
-        textUIs[(int)textUI.Goal].text = $"   목표 : {GameManager.Instance.goal}";
+        textUIs[(int)textUI.Goal].text = $"목표 : {GameManager.Instance.goal}";
     }
     #endregion
 
@@ -155,6 +155,6 @@ public class UIManager : MonoBehaviour
         elv_BTN_Ons = Resources.LoadAll<Sprite>("Sprites/Elevator_Buttons_On");
         numberPannels = Resources.LoadAll<Sprite>("Sprites/Number_Pannels"); // 숫자 패널 이미지 불러오기
         textUIs[(int)textUI.stageTime].text = $"{11 + GameManager.Instance.stageNum} : 30";
-        textUIs[(int)textUI.Attend].text = $"   달성 : {GameManager.Instance.attend}";
+        textUIs[(int)textUI.Attend].text = $"달성 : {GameManager.Instance.attend}";
     }
 }

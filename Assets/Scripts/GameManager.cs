@@ -80,7 +80,13 @@ public class GameManager : MonoBehaviour
     #region 엘리베이터
     public GameObject door_Left; // 엘리베이터 문
     public GameObject door_Right;
-    public SpriteRenderer background; // 외부배경
+    public GameObject door_Left_Empty;
+    public GameObject door_Right_Empty;
+    float left_Close;
+    float right_Close;
+    float left_Open;
+    float right_Open;
+    public Image background; // 외부배경
     Sprite[] backgrounds; // 외부배경 이미지들
     public Image arrow; // 엘리베이터 이동 화살표
     Sprite[] arrowMotion; // 엘리베이터 이동 화살표 이미지들
@@ -88,13 +94,13 @@ public class GameManager : MonoBehaviour
     int eSpeed = 1; // 엘리베이터가 한 층 이동할 때 마다 경과하는 시간
     public void DoorClose() // 문 열기
     {
-        door_Left.transform.DOMoveX(-0.458f, 0.5f);
-        door_Right.transform.DOMoveX(1.297f, 0.5f);
+        door_Left.transform.DOMoveX(left_Close, 0.5f);
+        door_Right.transform.DOMoveX(right_Close, 0.5f);
     }
     public void DoorOpen() // 문 닫기
     {
-        door_Left.transform.DOMoveX(-2.278f, 0.5f);
-        door_Right.transform.DOMoveX(3.13f, 0.5f);
+        door_Left.transform.DOMoveX(left_Open, 0.5f);
+        door_Right.transform.DOMoveX(right_Open, 0.5f);
     }
     IEnumerator ArrowUping(int f) // 위쪽 화살표 모션
     {
@@ -306,6 +312,11 @@ public class GameManager : MonoBehaviour
             Debug.Log($"현재 스테이지: {stageNum}");
         }
 
+        left_Close = door_Left.transform.position.x;
+        right_Close = door_Right.transform.position.x;
+        left_Open = door_Left_Empty.transform.position.x;
+        right_Open = door_Right_Empty.transform.position.x;
+
         check_Place = new bool[9];
         check_Out = new bool[11,3];
         place = new Vector3[9];
@@ -335,6 +346,9 @@ public class GameManager : MonoBehaviour
         faceSprites = Resources.LoadAll<Sprite>("Sprites/Human/Face");
         topSprites = Resources.LoadAll<Sprite>("Sprites/Human/Top");
         pantsSprites = Resources.LoadAll<Sprite>("Sprites/Human/Pants");
+
+        Student.isOnSetting = false;
+        Student.isElvMoving = false;
 
         Instantiate(Resources.Load<GameObject>($"Stage")); // 스테이지 불러오기
     }

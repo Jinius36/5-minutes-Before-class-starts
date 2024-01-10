@@ -44,32 +44,32 @@ TagManager:
   - name: HairBack
     uniqueID: 1581293825
     locked: 0
-  - name: Face
-    uniqueID: 4617745
-    locked: 0
-  - name: Hair
-    uniqueID: 2403950513
-    locked: 0
   - name: Pants
     uniqueID: 2347978807
     locked: 0
   - name: Top
     uniqueID: 241933629
     locked: 0
+  - name: Face
+    uniqueID: 4617745
+    locked: 0
+  - name: Hair
+    uniqueID: 2403950513
+    locked: 0
   - name: DragHairBack
     uniqueID: 2772977855
-    locked: 0
-  - name: DragFace
-    uniqueID: 1717853391
-    locked: 0
-  - name: DragHair
-    uniqueID: 2478990493
     locked: 0
   - name: DragPants
     uniqueID: 3634400577
     locked: 0
   - name: DragTop
     uniqueID: 63521661
+    locked: 0
+  - name: DragFace
+    uniqueID: 1717853391
+    locked: 0
+  - name: DragHair
+    uniqueID: 2478990493
     locked: 0
   - name: FloorPopUp
     uniqueID: 4199112157

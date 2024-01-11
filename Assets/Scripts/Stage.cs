@@ -15,6 +15,87 @@ public class Stage : MonoBehaviour
         switch (GameManager.Instance.stageNum)
         {
             case 1:
+                GameManager.Instance.goal = 7;
+                GameManager.Instance.limitTime = 30;
+                for (int i = 0; i < 7; i++)
+                {
+                    do
+                    {
+                        spawnFloor = Rand.Range(0, 11);
+                    }
+                    while (howManyStudent[spawnFloor] > 2);
+                    howManyStudent[spawnFloor] += 1;
+                    sex = Rand.Range(0, 2);
+                    do
+                    {
+                        goalFloor = Rand.Range(0, 11);
+                    }
+                    while (goalFloor == spawnFloor);
+                    do
+                    {
+                        orderPlace = Rand.Range(0, 3);
+                    }
+                    while (GameManager.Instance.check_Out[spawnFloor, orderPlace]);
+                    GameManager.Instance.check_Out[spawnFloor, orderPlace] = true;
+                    GameManager.Instance.students.Add(GameManager.Instance.Spawn(sex, spawnFloor, goalFloor, orderPlace));
+                } 
+                break;
+
+            case 2:
+                GameManager.Instance.goal = 8;
+                GameManager.Instance.limitTime = 30;
+                for (int i = 0; i < 8; i++)
+                {
+                    do
+                    {
+                        spawnFloor = Rand.Range(0, 11);
+                    }
+                    while (howManyStudent[spawnFloor] > 2);
+                    howManyStudent[spawnFloor] += 1;
+                    sex = Rand.Range(0, 2);
+                    do
+                    {
+                        goalFloor = Rand.Range(0, 11);
+                    }
+                    while (goalFloor == spawnFloor);
+                    do
+                    {
+                        orderPlace = Rand.Range(0, 3);
+                    }
+                    while (GameManager.Instance.check_Out[spawnFloor, orderPlace]);
+                    GameManager.Instance.check_Out[spawnFloor, orderPlace] = true;
+                    GameManager.Instance.students.Add(GameManager.Instance.Spawn(sex, spawnFloor, goalFloor, orderPlace));
+                }
+                break;
+
+            case 3:
+                GameManager.Instance.goal = 9;
+                GameManager.Instance.limitTime = 30;
+                for (int i = 0; i < 9; i++)
+                {
+                    do
+                    {
+                        spawnFloor = Rand.Range(0, 11);
+                    }
+                    while (howManyStudent[spawnFloor] > 2);
+                    howManyStudent[spawnFloor] += 1;
+                    sex = Rand.Range(0, 2);
+                    do
+                    {
+                        goalFloor = Rand.Range(0, 11);
+                    }
+                    while (goalFloor == spawnFloor);
+                    do
+                    {
+                        orderPlace = Rand.Range(0, 3);
+                    }
+                    while (GameManager.Instance.check_Out[spawnFloor, orderPlace]);
+                    GameManager.Instance.check_Out[spawnFloor, orderPlace] = true;
+                    GameManager.Instance.students.Add(GameManager.Instance.Spawn(sex, spawnFloor, goalFloor, orderPlace));
+                }
+                break;
+
+            case 4:
                 GameManager.Instance.goal = 8;
                 GameManager.Instance.limitTime = 30;
                 for (int i = 0; i < 8; i++)
@@ -38,10 +119,10 @@ public class Stage : MonoBehaviour
                     while (GameManager.Instance.check_Out[spawnFloor, orderPlace]);
                     GameManager.Instance.check_Out[spawnFloor, orderPlace] = true;
                     GameManager.Instance.students.Add(GameManager.Instance.Spawn(sex, spawnFloor, goalFloor, orderPlace));
-                } 
+                }
                 break;
 
-            case 2:
+            case 5:
                 GameManager.Instance.goal = 9;
                 GameManager.Instance.limitTime = 30;
                 for (int i = 0; i < 9; i++)
@@ -68,7 +149,7 @@ public class Stage : MonoBehaviour
                 }
                 break;
 
-            case 3:
+            case 6:
                 GameManager.Instance.goal = 10;
                 GameManager.Instance.limitTime = 30;
                 for (int i = 0; i < 10; i++)
@@ -77,88 +158,7 @@ public class Stage : MonoBehaviour
                     {
                         spawnFloor = Rand.Range(0, 11);
                     }
-                    while (howManyStudent[spawnFloor] > 2);
-                    howManyStudent[spawnFloor] += 1;
-                    sex = Rand.Range(0, 2);
-                    do
-                    {
-                        goalFloor = Rand.Range(0, 11);
-                    }
-                    while (goalFloor == spawnFloor);
-                    do
-                    {
-                        orderPlace = Rand.Range(0, 3);
-                    }
-                    while (GameManager.Instance.check_Out[spawnFloor, orderPlace]);
-                    GameManager.Instance.check_Out[spawnFloor, orderPlace] = true;
-                    GameManager.Instance.students.Add(GameManager.Instance.Spawn(sex, spawnFloor, goalFloor, orderPlace));
-                }
-                break;
-
-            case 4:
-                GameManager.Instance.goal = 11;
-                GameManager.Instance.limitTime = 30;
-                for (int i = 0; i < 11; i++)
-                {
-                    do
-                    {
-                        spawnFloor = Rand.Range(0, 11);
-                    }
-                    while (howManyStudent[spawnFloor] > 2);
-                    howManyStudent[spawnFloor] += 1;
-                    sex = Rand.Range(0, 2);
-                    do
-                    {
-                        goalFloor = Rand.Range(0, 11);
-                    }
-                    while (goalFloor == spawnFloor);
-                    do
-                    {
-                        orderPlace = Rand.Range(0, 3);
-                    }
-                    while (GameManager.Instance.check_Out[spawnFloor, orderPlace]);
-                    GameManager.Instance.check_Out[spawnFloor, orderPlace] = true;
-                    GameManager.Instance.students.Add(GameManager.Instance.Spawn(sex, spawnFloor, goalFloor, orderPlace));
-                }
-                break;
-
-            case 5:
-                GameManager.Instance.goal = 12;
-                GameManager.Instance.limitTime = 30;
-                for (int i = 0; i < 12; i++)
-                {
-                    do
-                    {
-                        spawnFloor = Rand.Range(0, 11);
-                    }
-                    while (howManyStudent[spawnFloor] > 2);
-                    howManyStudent[spawnFloor] += 1;
-                    sex = Rand.Range(0, 2);
-                    do
-                    {
-                        goalFloor = Rand.Range(0, 11);
-                    }
-                    while (goalFloor == spawnFloor);
-                    do
-                    {
-                        orderPlace = Rand.Range(0, 3);
-                    }
-                    while (GameManager.Instance.check_Out[spawnFloor, orderPlace]);
-                    GameManager.Instance.check_Out[spawnFloor, orderPlace] = true;
-                    GameManager.Instance.students.Add(GameManager.Instance.Spawn(sex, spawnFloor, goalFloor, orderPlace));
-                }
-                break;
-
-            case 6:
-                GameManager.Instance.goal = 13;
-                GameManager.Instance.limitTime = 30;
-                for (int i = 0; i < 13; i++)
-                {
-                    do
-                    {
-                        spawnFloor = Rand.Range(0, 11);
-                    }
-                    while (howManyStudent[spawnFloor] > 2);
+                    while (howManyStudent[spawnFloor] > 1);
                     howManyStudent[spawnFloor] += 1;
                     sex = Rand.Range(0, 2);
                     do
@@ -177,15 +177,15 @@ public class Stage : MonoBehaviour
                 break;
 
             case 7:
-                GameManager.Instance.goal = 14;
+                GameManager.Instance.goal = 11;
                 GameManager.Instance.limitTime = 30;
-                for (int i = 0; i < 14; i++)
+                for (int i = 0; i < 11; i++)
                 {
                     do
                     {
                         spawnFloor = Rand.Range(0, 11);
                     }
-                    while (howManyStudent[spawnFloor] > 2);
+                    while (howManyStudent[spawnFloor] > 1);
                     howManyStudent[spawnFloor] += 1;
                     sex = Rand.Range(0, 2);
                     do
@@ -204,15 +204,15 @@ public class Stage : MonoBehaviour
                 break;
 
             case 8:
-                GameManager.Instance.goal = 15;
+                GameManager.Instance.goal = 12;
                 GameManager.Instance.limitTime = 30;
-                for (int i = 0; i < 15; i++)
+                for (int i = 0; i < 12; i++)
                 {
                     do
                     {
                         spawnFloor = Rand.Range(0, 11);
                     }
-                    while (howManyStudent[spawnFloor] > 2);
+                    while (howManyStudent[spawnFloor] > 1);
                     howManyStudent[spawnFloor] += 1;
                     sex = Rand.Range(0, 2);
                     do
@@ -231,15 +231,15 @@ public class Stage : MonoBehaviour
                 break;
 
             case 9:
-                GameManager.Instance.goal = 15;
+                GameManager.Instance.goal = 13;
                 GameManager.Instance.limitTime = 30;
-                for (int i = 0; i < 15; i++)
+                for (int i = 0; i < 13; i++)
                 {
                     do
                     {
                         spawnFloor = Rand.Range(0, 11);
                     }
-                    while (howManyStudent[spawnFloor] > 2);
+                    while (howManyStudent[spawnFloor] > 1);
                     howManyStudent[spawnFloor] += 1;
                     sex = Rand.Range(0, 2);
                     do

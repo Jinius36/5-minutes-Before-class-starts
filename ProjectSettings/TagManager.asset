@@ -75,5 +75,11 @@ TagManager:
     uniqueID: 4199112157
     locked: 0
   - name: UI
+    uniqueID: 2378785793
+    locked: 0
+  - name: PopUpUI
     uniqueID: 1224240059
+    locked: 0
+  - name: New Layer
+    uniqueID: 2316121409
     locked: 0

@@ -15,9 +15,9 @@ public class Stage : MonoBehaviour
         switch (GameManager.Instance.stageNum)
         {
             case 1:
-                GameManager.Instance.goal = 7;
+                GameManager.Instance.goal = 8;
                 GameManager.Instance.limitTime = 30;
-                for (int i = 0; i < 7; i++)
+                for (int i = 0; i < 8; i++)
                 {
                     do
                     {
@@ -42,9 +42,9 @@ public class Stage : MonoBehaviour
                 break;
 
             case 2:
-                GameManager.Instance.goal = 8;
+                GameManager.Instance.goal = 9;
                 GameManager.Instance.limitTime = 30;
-                for (int i = 0; i < 8; i++)
+                for (int i = 0; i < 9; i++)
                 {
                     do
                     {
@@ -69,9 +69,9 @@ public class Stage : MonoBehaviour
                 break;
 
             case 3:
-                GameManager.Instance.goal = 9;
+                GameManager.Instance.goal = 10;
                 GameManager.Instance.limitTime = 30;
-                for (int i = 0; i < 9; i++)
+                for (int i = 0; i < 10; i++)
                 {
                     do
                     {
@@ -96,15 +96,15 @@ public class Stage : MonoBehaviour
                 break;
 
             case 4:
-                GameManager.Instance.goal = 8;
+                GameManager.Instance.goal = 11;
                 GameManager.Instance.limitTime = 30;
-                for (int i = 0; i < 8; i++)
+                for (int i = 0; i < 11; i++)
                 {
                     do
                     {
                         spawnFloor = Rand.Range(0, 11);
                     }
-                    while (howManyStudent[spawnFloor] > 1);
+                    while (howManyStudent[spawnFloor] > 2);
                     howManyStudent[spawnFloor] += 1;
                     sex = Rand.Range(0, 2);
                     do
@@ -123,15 +123,15 @@ public class Stage : MonoBehaviour
                 break;
 
             case 5:
-                GameManager.Instance.goal = 9;
+                GameManager.Instance.goal = 12;
                 GameManager.Instance.limitTime = 30;
-                for (int i = 0; i < 9; i++)
+                for (int i = 0; i < 12; i++)
                 {
                     do
                     {
                         spawnFloor = Rand.Range(0, 11);
                     }
-                    while (howManyStudent[spawnFloor] > 1);
+                    while (howManyStudent[spawnFloor] > 2);
                     howManyStudent[spawnFloor] += 1;
                     sex = Rand.Range(0, 2);
                     do

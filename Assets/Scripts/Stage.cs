@@ -15,9 +15,9 @@ public class Stage : MonoBehaviour
         switch (GameManager.Instance.stageNum)
         {
             case 1:
-                GameManager.Instance.goal = 8;
+                GameManager.Instance.goal = 12;
                 GameManager.Instance.limitTime = 30;
-                for (int i = 0; i < 8; i++)
+                for (int i = 0; i < 12; i++)
                 {
                     do
                     {
@@ -42,9 +42,9 @@ public class Stage : MonoBehaviour
                 break;
 
             case 2:
-                GameManager.Instance.goal = 9;
+                GameManager.Instance.goal = 13;
                 GameManager.Instance.limitTime = 30;
-                for (int i = 0; i < 9; i++)
+                for (int i = 0; i < 13; i++)
                 {
                     do
                     {
@@ -69,9 +69,9 @@ public class Stage : MonoBehaviour
                 break;
 
             case 3:
-                GameManager.Instance.goal = 10;
+                GameManager.Instance.goal = 14;
                 GameManager.Instance.limitTime = 30;
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < 14; i++)
                 {
                     do
                     {
@@ -96,9 +96,9 @@ public class Stage : MonoBehaviour
                 break;
 
             case 4:
-                GameManager.Instance.goal = 11;
+                GameManager.Instance.goal = 15;
                 GameManager.Instance.limitTime = 30;
-                for (int i = 0; i < 11; i++)
+                for (int i = 0; i < 15; i++)
                 {
                     do
                     {
@@ -123,9 +123,9 @@ public class Stage : MonoBehaviour
                 break;
 
             case 5:
-                GameManager.Instance.goal = 12;
+                GameManager.Instance.goal = 16;
                 GameManager.Instance.limitTime = 30;
-                for (int i = 0; i < 12; i++)
+                for (int i = 0; i < 16; i++)
                 {
                     do
                     {
@@ -150,9 +150,9 @@ public class Stage : MonoBehaviour
                 break;
 
             case 6:
-                GameManager.Instance.goal = 10;
+                GameManager.Instance.goal = 19;
                 GameManager.Instance.limitTime = 30;
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < 19; i++)
                 {
                     do
                     {
@@ -177,9 +177,9 @@ public class Stage : MonoBehaviour
                 break;
 
             case 7:
-                GameManager.Instance.goal = 11;
+                GameManager.Instance.goal = 20;
                 GameManager.Instance.limitTime = 30;
-                for (int i = 0; i < 11; i++)
+                for (int i = 0; i < 20; i++)
                 {
                     do
                     {
@@ -204,9 +204,9 @@ public class Stage : MonoBehaviour
                 break;
 
             case 8:
-                GameManager.Instance.goal = 12;
+                GameManager.Instance.goal = 21;
                 GameManager.Instance.limitTime = 30;
-                for (int i = 0; i < 12; i++)
+                for (int i = 0; i < 21; i++)
                 {
                     do
                     {
@@ -231,9 +231,9 @@ public class Stage : MonoBehaviour
                 break;
 
             case 9:
-                GameManager.Instance.goal = 13;
+                GameManager.Instance.goal = 22;
                 GameManager.Instance.limitTime = 30;
-                for (int i = 0; i < 13; i++)
+                for (int i = 0; i < 22; i++)
                 {
                     do
                     {

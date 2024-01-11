@@ -62,9 +62,29 @@ public class UIManager : MonoBehaviour
             hour++;
             minute = GameManager.Instance.stageTime + 30;
         }
-        textUIs[(int)textUI.stageTime].text = $"{11 + hour + GameManager.Instance.stageNum} : {30 - minute + GameManager.Instance.stageTime}";
-        if (30 - minute + GameManager.Instance.stageTime == 0)
+        if (GameManager.Instance.stageNum + hour > 2)
+        {
+            textUIs[(int)textUI.stageTime].text = $"{7 + hour + GameManager.Instance.stageNum} : {30 - minute + GameManager.Instance.stageTime}";
+        }
+        else
+        {
+            textUIs[(int)textUI.stageTime].text = "0" + $"{7 + hour + GameManager.Instance.stageNum} : {30 - minute + GameManager.Instance.stageTime}";
+        }
+        if (GameManager.Instance.stageTime == 30)
+        {
             textUIs[(int)textUI.stageTime].text += "0";
+        }
+        if (GameManager.Instance.stageTime > 30)
+        {
+            if (GameManager.Instance.stageNum + hour > 2)
+            {
+                textUIs[(int)textUI.stageTime].text = $"{7 + hour + GameManager.Instance.stageNum} :" + $" 0{30 - minute + GameManager.Instance.stageTime}";
+            }
+            else
+            {
+                textUIs[(int)textUI.stageTime].text = "0" + $"{7 + hour + GameManager.Instance.stageNum} :" + $" 0{30 - minute + GameManager.Instance.stageTime}";
+            }
+        }
     } 
     public void addAttend() // 달성 인원 추가, 표시 변경
     {
@@ -154,7 +174,7 @@ public class UIManager : MonoBehaviour
         elv_BTN_Offs= Resources.LoadAll<Sprite>("Sprites/Elevator_Buttons_Off"); // 엘리베이터 버튼 이미지 불러오기
         elv_BTN_Ons = Resources.LoadAll<Sprite>("Sprites/Elevator_Buttons_On");
         numberPannels = Resources.LoadAll<Sprite>("Sprites/Number_Pannels"); // 숫자 패널 이미지 불러오기
-        textUIs[(int)textUI.stageTime].text = $"{11 + GameManager.Instance.stageNum} : 30";
+        addStageTime(0);
         textUIs[(int)textUI.Attend].text = $"달성 : {GameManager.Instance.attend}";
     }
 }

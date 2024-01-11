@@ -336,7 +336,7 @@ public class GameManager : MonoBehaviour
             int index = i;
             float x = (index % 3) * 1.15f;
             float y = index / 3 * 2.5f;
-            place[i] = new Vector3(-0.75f + x, 1.5f - y, 10);
+            place[i] = new Vector3(-0.705f + x, 1.5f - y, 10);
         }
 
         arrowMotion = Resources.LoadAll<Sprite>("Sprites/Arrow_Pannel"); // 엘리베이터 이동 화살표 이미지 불러오기

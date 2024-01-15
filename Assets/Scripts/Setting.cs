@@ -92,10 +92,9 @@ public class Setting : MonoBehaviour
     public AudioSource sfxSound; // 게임내의 모든 버튼을 눌렀을 때 나오는 사운드
     public AudioSource sfxSound2; // 엘리베이터 이동, 학생들 이동 소리
     public AudioSource bgmSound; // 배경음악
-    //public GameObject bgmPlayer;
     public enum soundList // 사운드 이름들
     {
-        Arrive, Button, Clear, ElevatorButton, ElevatorMove, Fail, SlideHow, StudentMove, MaxCount
+        Arrive, Button, Clear, ElevatorButton, Fail, MainSound, SlideHow, MaxCount
     }
     public AudioClip[] sounds; // 사운드 리스트
     public AudioMixer sfxMixer; // 효과음 믹서
@@ -291,15 +290,7 @@ public class Setting : MonoBehaviour
             toggleSFX.image.sprite = toggleSFX_images[onSFX ? 0 : 1];
         }
 
-        //PlayBGM(sounds[(int)soundList.ElevatorMove]);
-
-        //if (SceneManager.GetActiveScene().buildIndex == 0)
-        //{
-        //    bgmSound = bgmPlayer.AddComponent<AudioSource>();
-        //    bgmSound.outputAudioMixerGroup = bgmMixer.FindMatchingGroups("Master")[0];
-        //    bgmSound.loop = true;
-        //    //PlayBGM(sounds[(int)soundList.ElevatorMove]);
-        //}
+        PlayBGM(sounds[(int)soundList.MainSound]);
 
         if (SceneManager.GetActiveScene().buildIndex == 0)
         {

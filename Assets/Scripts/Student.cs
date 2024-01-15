@@ -121,7 +121,6 @@ public class Student : MonoBehaviour
         {
             if (goalFloor == GameManager.Instance.floor) // 원하는 층에 도착한 상황
             {
-                //GameManager.Instance.PlaySound(GameManager.Instance.sounds[(int)GameManager.soundList.StudentMove]);
                 GameManager.Instance.check_Place[orderPlace] = false;
                 UIManager.Instance.addAttend();
                 if (GameManager.Instance.goal == GameManager.Instance.attend)
@@ -130,17 +129,6 @@ public class Student : MonoBehaviour
                 }
                 Destroy(gameObject);
             }
-            //if (!GameManager.Instance.check_Out[nowFloor,p]) // 내린 층이 원하는 층이 아니고 그 층 중에 빈 자리에 배치함
-            //{
-            //    nowFloor = GameManager.Instance.floor;
-            //    transform.position = GameManager.Instance.place[p];
-            //    if(orderPlace > 2) // 엘리베이터에서 밖으로 배치한 경우
-            //        GameManager.Instance.check_Place[orderPlace] = false;
-            //    else // 밖에서 밖으로 배치한 경우
-            //        GameManager.Instance.check_Out[nowFloor, orderPlace] = false;
-            //    orderPlace = p;
-            //    GameManager.Instance.check_Out[nowFloor, p] = true;
-            //}
             else // 내린 층이 원하는 층이 아님
             {
                 ResetPlace();
@@ -163,7 +151,6 @@ public class Student : MonoBehaviour
             }
             if (!GameManager.Instance.check_Place[p])
             {
-                //GameManager.Instance.PlaySound(GameManager.Instance.sounds[(int)GameManager.soundList.StudentMove]);
                 transform.position = GameManager.Instance.place[p];
                 if (orderPlace > 2) // 엘리베이터에서 엘리베이터로 배치한 경우
                 {

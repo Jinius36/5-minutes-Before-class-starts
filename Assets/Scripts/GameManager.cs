@@ -46,11 +46,7 @@ public class GameManager : MonoBehaviour
     public void StageClear() // 제한시간 안에 모든 학생이 도착하면 성공, stageNum++
     {
         Setting.Instance.PlaySFX(Setting.Instance.sounds[(int)Setting.soundList.Clear]);
-        if (stageNum == 9)
-        {
-            stageNum = 1;
-        }
-        else
+        if (stageNum != 9)
         {
             stageNum++;
         }
